@@ -9,21 +9,22 @@ int main(int argc, char *argv[]) {
   int regla = atoi(argv[1]);
   int N = atoi(argv[2]);
   FILE* entrada = fopen(argv[3], "r");
-  int i;
 
+  // crear matriz y cargar primer fila
   char **matriz;
   matriz = (char **) malloc(N * sizeof(char *));
+  int i;
   for (i = 0; i < N; i++)
     matriz[i] = (char *) malloc(N * sizeof(char));
-
   i = 0;
   int aux = fgetc(entrada);
   while (aux != EOF) {
-    matriz[i][0] = aux - '0';
+    matriz[0][i] = aux - '0';
     i++;
     aux = fgetc(entrada);
   }
 
+  // calcular las demas filas
   int j;
   for (i = 0; i < N-1; i++){
     for(j = 0; j < N; j++){
@@ -31,10 +32,29 @@ int main(int argc, char *argv[]) {
     }
   }
 
+
+  // escribir imagen:
+  FILE *salida;
+  if ((salida = fopen("salida.pmb", "wb")) == NULL) {
+         fprintf(stderr, "error al crear archivo salida");
+         return -1;
+  }
+
+  fprintf(salida, "P1\n%d %d\n", N, N);
+  for (i = 0; i < N; i++){
+    for(j = 0; j < N; j++){
+      fprintf(salida,"%d",matriz[i][j]);
+    }
+    fputc('\n',salida);
+  }
+
+
+  //frees y fcloses
   for (i = 0; i < N; i++)
     free(matriz[i]);
   free(matriz);
   fclose(entrada);
+  fclose(salida);
 }
 
 
