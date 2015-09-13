@@ -46,6 +46,9 @@ int main(int argc, char *argv[]) {
 		matriz[i] = (unsigned char *) malloc(N * sizeof(unsigned char));
 
 
+	//TODO: Ojo con los return -1 porque si pedimos aca arriba memoria no deberiamos liberarla
+	//		antes de hacer esos return?
+
 	// cargar primer fila
 	i = 0;
 	int aux;
@@ -56,19 +59,27 @@ int main(int argc, char *argv[]) {
 			fprintf(stdout, "%i\n", aux);
 			i++;
 		} else {
-			fprintf(stdout, "%i\n", aux);
-			fprintf(stderr, "El formato del archivo de entrada no es correcto.\n");
-			return -1;
+			if (aux == 10)
+					fprintf(stdout, "fin de linea\n");
+			else {
+				fprintf(stdout, "%i\n", aux);
+				fprintf(stderr, "El formato del archivo de entrada no es correcto.\n");
+	//			return -1;
+			}
 		}
 		if (i > N) {
 			fprintf(stderr, "La cantidad de columnas en el archivo de entrada es mayor a la longitud indicada por \"N\".\n");
 			return -1;
 		}
 	}
-	if (i < N) fprintf (stderr, "La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por \"N\".");
+	if (i < N) {
+		fprintf (stderr, "La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por \"N\".\n");
+		return -1;
+	}
 
 
 	// calcular las demas filas
+	fprintf(stdout, "%i\n", aux); // Deberia imprimir -1 ya que seria el EOF
 	int j;
 	for (i = 0; i < N-1; i++){
 		for(j = 0; j < N; j++){
