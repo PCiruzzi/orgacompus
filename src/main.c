@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-
-typedef enum { false, true } bool;
+#include "proximo.h"
 
 int verificarRegla(char* argv1) {
   char* end;
@@ -73,24 +69,6 @@ void cargarPrimeraFila(int N, bool* continuar, FILE* entrada, unsigned char (*ma
     fprintf(stderr, "La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por \"N\".\n");
     *continuar = false;
   }
-}
-
-unsigned char proximo(unsigned char *a, unsigned int i, unsigned int j,
-                      unsigned char regla, unsigned int N){
-  unsigned char izq,der,actual;
-  if (j== 0)
-    izq = *(a+N*i+ (N-1));
-  else
-    izq = *(a+N*i+ (j-1) );
-  if (j == (N-1))
-    der = *(a+N*i);
-  else
-    der = *(a+N*i+ (j+1) );
-  actual = *(a+N*i+j);
-  unsigned char pos = 4*izq + 2*actual + der;
-  if ((regla) & (1<<(pos)))
-    return 1;
-  return 0;
 }
 
 void calcularFilas(bool continuar, int N, int regla, unsigned char(*matriz)[N]) {
