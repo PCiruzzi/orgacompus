@@ -15,6 +15,5 @@ unsigned char proximo(unsigned char *a, unsigned int i, unsigned int j, unsigned
   unsigned char pos = 4*izq + 2*actual + der;
   if ((regla) & (1<<(pos)))
     return 1;
-  return 0;
-  
+  return 0; 
 }
