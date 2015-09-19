@@ -1,14 +1,14 @@
 #include "proximo.h"
 
 bool verificarOpcion(char* argv1) {
-	//Chequear que sea -V o --version, o bien, -h o --help
-	if ( strcmp(argv1, "-V") == 0 || strcmp(argv1,"--version") == 0 )
+  //Chequear que sea -V o --version, o bien, -h o --help
+  if ( strcmp(argv1, "-V") == 0 || strcmp(argv1,"--version") == 0 )
     fprintf(stdout, "autcel: version 1.0\n");
-	else if ( strcmp(argv1,"-h") == 0 || strcmp(argv1,"--help") == 0 )
-		fprintf(stdout, "Uso:\nautcel -h\nautcel -V\nautcel R N inputfile [-o outputprefix]\n\nOpciones:\n-h, --help\tImprime este mensaje.\n-V, --version\tDa la version del programa.\n-o\t\tPrefijo de los archivos de salida.\n\nEjemplo:\nautcel 30 80 inicial -o evolucion\nCalcula la evolucion del automata \"Regla 30\", en un mundo unidimensional de 80 celdas, por 80 iteraciones.\nEl archivo de salida se llamara evolucion.pbm.\nSi no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.\n");
-	else
+  else if ( strcmp(argv1,"-h") == 0 || strcmp(argv1,"--help") == 0 )
+    fprintf(stdout, "Uso:\nautcel -h\nautcel -V\nautcel R N inputfile [-o outputprefix]\n\nOpciones:\n-h, --help\tImprime este mensaje.\n-V, --version\tDa la version del programa.\n-o\t\tPrefijo de los archivos de salida.\n\nEjemplo:\nautcel 30 80 inicial -o evolucion\nCalcula la evolucion del automata \"Regla 30\", en un mundo unidimensional de 80 celdas, por 80 iteraciones.\nEl archivo de salida se llamara evolucion.pbm.\nSi no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.\n");
+  else
     fprintf(stderr, "El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.\n");
-	return false;
+  return false;
 }
 
 int verificarRegla(char* argv1) {
@@ -47,33 +47,35 @@ FILE* verificarEntrada(char* argv3) {
 }
 
 bool verificarParametros(int argc, char* argv[], int* regla, int* N, FILE** entrada, char **salida) {
-	//Recordar que argv tiene uno mas que los parametros que vienen de consola
-	if (argc == 2)
+  //Recordar que argv tiene uno mas que los parametros que vienen de consola
+  if (argc == 2)
     return verificarOpcion(argv[1]);
-	else if (argc == 4 || argc == 6) {
-		*regla = verificarRegla(argv[1]);
-	  if (*regla == -1) return false;
+  else if (argc == 4 || argc == 6) {
+    *regla = verificarRegla(argv[1]);
+    if (*regla == -1) return false;
 
-	  *N = verificarN(argv[2]);
-	  if (*N == -1) return false;
+    *N = verificarN(argv[2]);
+    if (*N == -1) return false;
 
-	  *entrada = verificarEntrada(argv[3]);
-	  if (*entrada == NULL) return false;
+    *entrada = verificarEntrada(argv[3]);
+    if (*entrada == NULL) return false;
 
-	  if (argc == 6) {
-	  	if ( strcmp(argv[4],"-o") != 0 ) {
-	  		fprintf(stderr, "El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.\n");
-	  		return false;
-	  	}
-	  	//El nombre del archivo de salida podria ser cualquier cosa, asique no verifico nada.
-	  	*salida = argv[5];
-	  } else //El nombre de la salida es el nombre de la entrada. Luego se le agregara la extension .pbm
-		  *salida = argv[3];
-	} else {
+    if (argc == 6) {
+      if ( strcmp(argv[4],"-o") != 0 ) {
+        fprintf(stderr, "El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.\n");
+        return false;
+      }
+      //El nombre del archivo de salida podria ser cualquier cosa, asique no verifico nada.
+      //TODO: Eliminar extension del archivo para que no quede con 2 posibles extensiones
+      *salida = argv[5];
+    } else //El nombre de la salida es el nombre de la entrada. Luego se le agregara la extension .pbm
+      //TODO: Eliminar extension del archivo para que no quede con 2 posibles extensiones
+      *salida = argv[3];
+  } else {
     fprintf(stderr, "El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.\n");
     return false;
   }
-	return true;
+  return true;
 }
 
 unsigned char** crearMatriz(int N) {
@@ -125,7 +127,7 @@ FILE* escribirImagen(bool continuar, int N, unsigned char (*matriz)[N], char** n
   int i;
   int j;
   FILE* salida;
-  strcat(*nombreSalida, ".pmb");
+  strcat(*nombreSalida, ".pbm");
 
   if ( (continuar == true) && ((salida = fopen(*nombreSalida, "wb")) == NULL) ) {
     fprintf(stderr, "Error al crear archivo salida.\n");
