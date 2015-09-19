@@ -1,4 +1,5 @@
 #include "proximo.h"
+#define TAMANIO_CELDA 4
 
 bool verificarOpcion(char* argv1) {
   //Chequear que sea -V o --version, o bien, -h o --help
@@ -124,8 +125,7 @@ void calcularFilas(bool continuar, int N, int regla, unsigned char(*matriz)[N]) 
 }
 
 FILE* escribirImagen(bool continuar, int N, unsigned char (*matriz)[N], char** nombreSalida, bool* seAbrioArchSalida) {
-  int i;
-  int j;
+  int i,j,k,l;
   FILE* salida;
   strcat(*nombreSalida, ".pbm");
 
@@ -135,12 +135,15 @@ FILE* escribirImagen(bool continuar, int N, unsigned char (*matriz)[N], char** n
   }
   if (continuar == true) {
     *seAbrioArchSalida = true;
-    fprintf(salida, "P1\n%d %d\n", N, N);
+        fprintf(salida, "P1\n%d %d\n", N*TAMANIO_CELDA, N*TAMANIO_CELDA);
     for (i = 0; i < N; i++) {
-      for (j = 0; j < N; j++) {
-        fprintf(salida, "%d", matriz[i][j]);
-      }
+      for( k= 0; k < TAMANIO_CELDA; k++ ){
+        for (j = 0; j < N; j++) {
+          for( l= 0; l < TAMANIO_CELDA; l++ )
+            fprintf(salida, "%d", matriz[i][j]);
+        }
       fputc('\n', salida);
+      }
     }
   }
   return salida;
