@@ -4,6 +4,7 @@
 \usepackage[ansinew]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{listings} 
+\usepackage{tabto}
 \usepackage{float}
 \usepackage[justification=centering]{caption}
 \usepackage[T1]{fontenc}
@@ -20,8 +21,10 @@
             \normalsize{2do. Cuatrimestre de 2015}                                      \\
             \normalsize{66.20 Organización de Computadoras  $-$ Práctica Jueves}  \\
             \normalsize{Facultad de Ingeniería, Universidad de Buenos Aires}            \\
+            \\
+            \\
        }
-\date{}
+\date{ 24 de Septiembre, 2015}
 
 \begin{document}
 
@@ -30,7 +33,7 @@
 
 
 \begin{abstract}
-Este trabajo práctico trata de una versión en lenguaje C, de un programa que ... . Además, se hizo un version en Assembly, de una función, para familiarizarse con el conjunto de instrucciones MIPS32 y el concepto de ABI.
+Este trabajo práctico trata de una versión en lenguaje C, de un programa que computa autómatas celulares para reglas y estados iniciales arbitrarios. Además, se hizo un version en Assembly de una función para familiarizarse con el conjunto de instrucciones MIPS32 y el concepto de ABI.
 \end{abstract}
 \pagebreak 
 
@@ -91,7 +94,44 @@ Finalmente para limpiar los archivos:
 \emph{make clean}\\
 
 \subsection{Corrida de Pruebas}
-
+Teniendo en cuenta un archivo inicial de 80 caracteres de que tiene el siguiente formato: \\
+\emph{\$ cat inicial \\
+00000000000000000000000000000000000000010000000000000000000000000000000000000000 \\}
+Se hicieron las siguientes pruebas:
+\begin{itemize}
+\NumTabs{4}
+	\item Como primer medida ejecutamos el comando -h para ver la ayuda: \\
+		\emph{\$ autcel -h \\
+			Uso: \\
+			autcel -h \\
+			autcel -V \\
+			autcel R N inputfile [-o outputprefix] \\
+			 \\
+			Opciones: \\
+			\tab{-h, --help}
+			\tab{Imprime este mensaje.} \\
+			\tab{-V, --version}
+			\tab{Da la version del programa.} \\
+			\tab{-o}
+			\tab{Prefijo de los archivos de salida.} \\
+			 \\
+			Ejemplo: \\
+			autcel 30 80 inicial -o evolucion \\
+			Calcula la evolucion del automata "Regla 30", en un mundo unidimensional de 80 celdas, por 80 iteraciones. \\
+			El archivo de salida se llamara evolucion.pbm. \\
+			Si no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.
+		}
+	\item Y luego el comando -V para ver la version: \\
+		\emph{\$ autcel -V \\
+			autcel: version 1.0
+		}
+	\item Primero probamos sin enviar ningun tipo de parametro: \\
+		\emph{\$ autcel \\
+			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
+		}
+	\item 
+	\ldots
+\end{itemize}
 
 \subsection{Código}
 \subsubsection{Código en C}
@@ -106,18 +146,18 @@ Finalmente para limpiar los archivos:
 \subsection{Proximo}
  Stack Size Proximo  24
 \begin{table}[h]
-\begin{tabular}{|l|l|l|} \hline %No se por que le tuve que agregar una columna mas, sino no compilaba.
- A4&  40&  \\ \hline
- A3&  36&  \\ \hline
- A2&  32&  \\ \hline
- A1&  28&  \\ \hline
- A0&  24&  \\ \hline
- FP&  20&  \\ \hline
- GP&  16&  \\ \hline
- POSICION&  12&  \\ \hline
- ACTUAL&  8&  \\ \hline
- DERECHA&  4&  \\	\hline
- IZQUIERDA&  0&  \\ \hline
+\begin{tabular}{|l|l|} \hline
+ A4&  40  \\ \hline
+ A3&  36  \\ \hline
+ A2&  32  \\ \hline
+ A1&  28  \\ \hline
+ A0&  24  \\ \hline
+ FP&  20  \\ \hline
+ GP&  16  \\ \hline
+ POSICION&  12  \\ \hline
+ ACTUAL&  8  \\ \hline
+ DERECHA&  4  \\	\hline
+ IZQUIERDA&  0  \\ \hline
 \end{tabular}
 \end{table} \\
 
