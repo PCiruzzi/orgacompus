@@ -44,8 +44,7 @@ proximo:
 
 #Guardo los parametros que me pasaron
 #El parametro a4 ya esta en la pos 40 del stack -> 40($fp)
-	move 	t0, a3					#Muevo Regla a t0
-	sb		t0, PROXIMO_ARG3($fp)	#Lo guardo como byte
+	sb		a3, PROXIMO_ARG3($fp)	#Guardo a regla como byte
 	sw		a2, PROXIMO_ARG2($fp)	#J
 	sw		a1, PROXIMO_ARG1($fp)	#I
 	sw		a0, PROXIMO_ARG0($fp)	#A[0][0]
@@ -134,9 +133,10 @@ posicion:
 comparacion:
 	lbu 	t0, PROXIMO_ARG3($fp)	#Cargo Regla en t0
 	lbu		t1, POSICION($fp)		#Cargo Pos en t1
-	sra 	t2, t0, t1 				#En t2 = reg << pos
-	andi 	t3, t2, 0x1				#En t3 = t2 & 0x1
-	beq 	t3, zero, devuelvo0		#Si t3 == 0 -> return 0
+	li 		t2, 1					#Cargo 1 en t2
+	sll 	t3, t2, t1				#En t3 = (1<<(pos))
+	and 	t4, t0, t3				#En t4 = (regla & t3) 
+	beq 	t4, zero, devuelvo0		#Si t4 = 0, return 0
 	li 		v0, 1 					#Sino return 1
 	b 		salir					#Salgo de la funcion
 
