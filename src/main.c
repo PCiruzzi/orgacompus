@@ -16,7 +16,7 @@ int verificarRegla(char* argv1) {
   char* end;
   int regla = strtol(argv1, &end, 10);
   if (end == argv1 || *end != '\0' || errno == ERANGE) {
-    fprintf(stderr, "El numero de regla no es valido. El mismo no contiene un valor numerico o se ha producido un overflow.\n"); //TODO: No se si es por overflow o qué
+    fprintf(stderr, "El numero de regla no es valido. El mismo no contiene un valor numerico o se ha producido un overflow.\n");
     return -1;
   }
   if ((regla < 0) || (regla > 255)) {
@@ -30,7 +30,7 @@ int verificarN(char* argv2) {
   char* end;
   int N = strtol(argv2, &end, 10);
   if (end == argv2 || *end != '\0' || errno == ERANGE) {
-    fprintf(stderr, "El numero de celdas e iteraciones (\"N\") no es valido. El mismo no contiene un valor numerico o se ha producido un overflow.\n"); //TODO: No se si es por overflow o qué
+    fprintf(stderr, "El numero de celdas e iteraciones (\"N\") no es valido. El mismo no contiene un valor numerico o se ha producido un overflow.\n");
     return -1;
   }
   if ((N < 1) || (N > 10000)) {
@@ -47,11 +47,11 @@ FILE* verificarEntrada(char* argv3) {
   return entrada;
 }
 
-void eliminarExtension(char*s){
-	char* c;
-	c = strrchr (s, '.');
-	    if (c != NULL)
-	        *c = '\0';
+void eliminarExtension(char* s) {
+  char* c;
+  c = strrchr (s, '.');
+  if (c != NULL)
+    *c = '\0';
 }
 
 bool verificarParametros(int argc, char* argv[], int* regla, int* N, FILE** entrada, char **salida) {
