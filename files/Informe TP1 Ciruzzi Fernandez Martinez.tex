@@ -8,6 +8,8 @@
 \usepackage{float}
 \usepackage[justification=centering]{caption}
 \usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{mips}
 
 
 \title{		\textbf{Trabajo práctico \#1: conjunto de instrucciones MIPS}}
@@ -49,9 +51,7 @@ Un autómata celular es un modelo matemático para un sistema dinámico que evoluci
 \subsection{Recursos y Portabilidad}
 
 Uno de los objetivos del trabajo práctico es poder probar la portabilidad del
-programa en diferentes entornos. En el enunciado se pedía que el programa se pudiera ejecutar en NetBSD[4]/pmax (usando el simulador GXemul[5]) y en la versión
-de Linux (Knoppix, RedHat, Debian, Ubuntu) usada para correr el simulador,
-Linux/i386. En particular, se lo probó en Ubuntu 14.04. En GXemul se corrió una máquina de arquitectura MIPS cuyo sistema operativo era una versión reciente de NetBSD/pmax. La transferencia de archivos entre la máquina host y la guest se hizo mediante \textit{SSH}. Se procedió de la siguiente manera:
+programa en diferentes entornos. En el enunciado se pedía que el programa se pudiera ejecutar en NetBSD[1] (usando el simulador GXemul[2]) y en la versión de Linux (Knoppix, RedHat, Debian, Ubuntu) usada para correr el simulador. En particular, se lo probó en Ubuntu 14.04. En GXemul se corrió una máquina de arquitectura MIPS cuyo sistema operativo era una versión reciente de NetBSD. La transferencia de archivos entre la máquina host y la guest se hizo mediante \textit{SSH}. Se procedió de la siguiente manera:
 
 Para trabajar con el GXemul se procedió primero creando una nueva interfaz de red (debe crearse cada vez que se inicia el \textit{host} y con permisos de administrador):
 \\
@@ -80,7 +80,8 @@ trabajar mediante SSH de manera más cómoda:
 \\
 
 \subsection{Implementación}
-
+La implementación del autómata celular unidimensional[3], tal como se lo explicó en la sección \textit{Introducción}, se hizo íntegramente en el lenguaje de programación C. Luego, también se desarrolló una de las funciones que ya se había implementado en C, en Assembler de una máquina de arquitectura MIPS32. La función a desarrollar en ambos lenguajes fue la función \textit{proximo} la cual, dadas la matriz y la celda que se quiere saber su próximo estado, devuelve este último. Para el pasaje entre C y Assembler se hizo uso de la ABI [4] explicada en la materia.
+\par El resultado de la ejecución del programa es guardado en un archivo PBM[5] el cual muestra el avance del autómata a través de los pasos discretos.
 
 \subsection{Compilación}
 
@@ -191,18 +192,38 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 
 \subsection{Código}
 \subsubsection{Código en C}
+\lstset{
+	language=C, columns=flexible, breaklines=true, frame=single, title=Listing : proximo.h
+}
+\lstinputlisting{../src/proximo.h}
+\lstset{
+	title=Listing : main.c
+}
+\lstinputlisting{../src/main.c}
+\lstset{
+	title=Listing : proximo.c
+}
+\lstinputlisting{../src/proximo.c}
 
-\begin{lstlisting}[language=C, columns=flexible, breaklines=true, frame=single, title=Listing : src/main.c]
-
-\end{lstlisting}
-
+\subsubsection{Código función proximo en Assembler}
+\lstset{
+	language=[mips]Assembler,
+	title=Listing : proximo.S,
+	tabsize=4
+}
+\lstinputlisting{../src/proximo.S}
 \pagebreak
 
 \section{Diagrama de Stack}
 \subsection{Proximo}
- Stack Size Proximo  24
+Aquí presentamos un diagrama del Stack de la función \textit{proximo}. Vale aclarar que en el mismo, se incluye el ABA (Argument Building Area) de la función que la llama (En este caso la función \textit{calcularFilas}). Como la cantidad de argumentos que recibe \textit{proximo} es mayor que 4, necesitamos agregarlos a ``mano'' y, para que quede múltiplo de 8 bytes, agregamos un padding. A su vez, al ser \textit{proximo} una función ``hoja'', su stack no posee ABA.
+\par Por otra parte también consideramos importante mencionar que tanto el SRA (Saved Register Area, que incluye al GP y FP) como LTA (Local Temporary Area, que incluye a las varibles utilizadas en la función) son múltiplo de 8 bytes, por lo que no requieren del agregado de un padding. \\
+\\
+Stack Size función proximo:  24
 \begin{table}[h]
+\centering
 \begin{tabular}{|l|l|} \hline
+ PADDING& 44 \\ \hline %Hay que ponerlo no??
  A4&  40  \\ \hline
  A3&  36  \\ \hline
  A2&  32  \\ \hline
@@ -215,19 +236,26 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
  DERECHA&  4  \\	\hline
  IZQUIERDA&  0  \\ \hline
 \end{tabular}
+\caption {Stack de la función proximo}
 \end{table} \\
 
 \newpage
 
+\section{Resultados}
+A continuación presentaremos los resultados de las corridas pedidas por los docentes de la materia.
+\par ACA PONER LAS SALIDAS DE LOS .PBM
+
 \section{Conclusiones}
 
 \par De este trabajo practico se pudo aprender como programar con el conjunto de instrucciones Assembly de MIPS32, asi como tambien la utilizacion correcta de la ABI de la catedra, entendiendo de esta manera como funciona una computadora a bajo nivel.
+\par Mencionar el hecho de que en NetBSD corre más lento!
 
 \newpage
 \section{Referencias}
-\noindent[1] GXemul, http://gavare.se/gxemul/.\\ \relax
-[2] The NetBSD project, http://www.netbsd.org/.\\ \relax
-[3] System V application binary interface, MIPS RISC processor supplement(third edition). Santa Cruz Operations, Inc.\\ \relax
+\noindent[1] The NetBSD project, \url{http://www.netbsd.org/}.\\ \relax
+[2] GXemul, \url{http://gavare.se/gxemul/}.\\ \relax
+[3] Autómatas celulares elementales: \url{http://mathworld.wolfram.com/ElementaryCellularAutomaton.html}.\\ \relax
 [4] func call conv.pdf, en el area de Material de los archivos del grupo de Yahoo.\\ \relax
+[5] Formato PBM: \url{http://netpbm.sourceforge.net/doc/pbm.html}.\\ \relax
 
 \end{document}

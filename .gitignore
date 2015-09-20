@@ -6,4 +6,5 @@
 /files/*.log
 /files/*.synctex.gz
 /files/*.toc
+/files/*.out
 /files/Informe TP1 Ciruzzi Fernandez Martinez.pdf
