@@ -41,7 +41,7 @@ Este trabajo práctico trata de una versión en lenguaje C, de un programa que com
 \pagebreak
 
 \section{Introducción}
-Un autómata celular es un modelo matemático para un sistema dinámico que evoluciona en pasos discretos, en este trabajo desarrollamos el autómata no trivial más simple que consiste en una retícula unidimensional de células que sólo pueden tener dos estados (0 o 1), con un vecindario constituido, para cada célula, de ella misma y de las dos células adyacentes ($2^{3}=8$ configuraciones posibles).
+Un autómata celular es un modelo matemático para un sistema dinámico que evoluciona en pasos discretos; en este trabajo desarrollamos el autómata no trivial más simple que consiste en una retícula unidimensional de células que sólo pueden tener dos estados (0 o 1), con un vecindario constituido, para cada célula, de ella misma y de las dos células adyacentes ($2^{3}=8$ configuraciones posibles).
 \par Existen $2^{8}=256$ modos de definir cuál ha de ser el estado de una célula en la generación siguiente para cada una de estas configuraciones. Estos modos se codifican según un número (llamado de regla) propuesto por Stephen Wolfram.
 \par Dado un número de regla y un estado inicial de N celdas, este programa se encarga de calcular los siguientes N estados para dicha configuración y escribirlos en una imagen de formato pbm.
 \section{Desarrollo}
@@ -85,7 +85,7 @@ trabajar mediante SSH de manera más cómoda:
 \subsection{Compilación}
 
 Para compilar el trabajo práctico, realizamos un Makefile para hacer mas sencilla esta tarea.\\
-\\
+
 \par Para compilar para C:
 \emph{make c}\\
 
@@ -93,7 +93,7 @@ Para compilar para MIPS:
 \emph{make mips}\\
 
 Finalmente para limpiar los archivos:
-\emph{make clean}\\
+\emph{make clean}
 
 \subsection{Corrida de Pruebas}
 Teniendo en cuenta un archivo inicial de 80 caracteres de que tiene el siguiente formato: \\
