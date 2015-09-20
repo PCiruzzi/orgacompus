@@ -95,13 +95,13 @@ Finalmente para limpiar los archivos:
 
 \subsection{Corrida de Pruebas}
 Teniendo en cuenta un archivo inicial de 80 caracteres de que tiene el siguiente formato: \\
-\emph{\$ cat inicial \\
+\emph{\textbf{\$ cat inicial \\}
 00000000000000000000000000000000000000010000000000000000000000000000000000000000 \\}
-Se hicieron las siguientes pruebas:
+Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron las siguientes pruebas:
 \begin{itemize}
 \NumTabs{4}
 	\item Como primer medida ejecutamos el comando -h para ver la ayuda: \\
-		\emph{\$ autcel -h \\
+		\emph{\textbf{\$ autcel -h \\}
 			Uso: \\
 			autcel -h \\
 			autcel -V \\
@@ -117,20 +117,74 @@ Se hicieron las siguientes pruebas:
 			 \\
 			Ejemplo: \\
 			autcel 30 80 inicial -o evolucion \\
-			Calcula la evolucion del automata "Regla 30", en un mundo unidimensional de 80 celdas, por 80 iteraciones. \\
+			Calcula la evolucion del automata ``Regla 30'', en un mundo unidimensional de 80 celdas, por 80 iteraciones. \\
 			El archivo de salida se llamara evolucion.pbm. \\
 			Si no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.
 		}
 	\item Y luego el comando -V para ver la version: \\
-		\emph{\$ autcel -V \\
+		\emph{\textbf{\$ autcel -V \\}
 			autcel: version 1.0
 		}
-	\item Primero probamos sin enviar ningun tipo de parametro: \\
-		\emph{\$ autcel \\
+	\item Primero probamos los ``casos felices'': \\
+		\emph{\textbf{\$ ./autcel 30 80 inicial \\}
+			Leyendo estado inicial... \\
+			Calculando los 79 estados siguientes... \\
+			Grabando inicial.pbm \\
+			Listo. \\
+			\textbf{\$ ./autcel 30 80 inicial -o final \\}
+			Leyendo estado inicial... \\
+			Calculando los 79 estados siguientes... \\
+			Grabando final.pbm \\
+			Listo.
+		}
+	\item Luego probamos sin enviar ningun tipo de parametro: \\
+		\emph{\textbf{\$ autcel \\}
 			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
 		}
-	\item 
-	\ldots
+	\item Y también cualquier otra idea que se nos ocurrió: \\
+		\emph{\textbf{\$ ./autcel -p \\}
+			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
+			\textbf{\$ ./autcel 30 80 \\}
+			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
+			\textbf{\$ ./autcel 30 80 primero \\}
+			El archivo de entrada especificado no se ha podido abrir o no existe. \\
+			\textbf{\$ ./autcel -1 80 inicial \\}
+			El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
+			\textbf{\$ ./autcel 256 80 inicial \\}
+			El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
+			\textbf{\$ ./autcel hola 80 inicial \\}
+			El numero de regla no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
+			\textbf{\$ ./autcel 30 -8 inicial \\}
+			El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
+			\textbf{\$ ./autcel 30 hola inicial \\}
+			El numero de celdas e iteraciones (``N'') no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
+			\textbf{\$ ./autcel 30 11111 inicial \\}
+			El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
+			\textbf{\$ ./autcel 30 80 inicial final \\}
+			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
+			\textbf{\$ ./autcel 30 80 inicial -p final \\}
+			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
+		}
+	\item Las próximas pruebas se refieren a errores en el archivo de entrada (Recordar que es un archivo de 80 caracteres, con todos 0 salvo el caracter central que es un 1): \\
+		\emph{\textbf{\$ ./autcel 30 15 inicial \\}
+			Leyendo estado inicial... \\
+			La cantidad de columnas en el archivo de entrada es mayor a la longitud indicada por ``N''. \\
+			\textbf{\$ ./autcel 30 90 inicial \\}
+			Leyendo estado inicial... \\
+			La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por ``N''.
+		}
+	\item Cambiando el archivo inicial de las maneras que muestra el comando \textit{cat}: \\
+		\emph{ \textbf{\$ cat inicial \\}
+			hola \\
+			\textbf{\$ ./autcel 30 80 inicial \\}
+			Leyendo estado inicial... \\
+			El formato del archivo de entrada no es correcto. \\
+			\textbf{\$ cat inicial \\}
+0000000000000000000000000000000000000001000000000000000000000000000000000000000\underline{h}\\
+			\textbf{\$ ./autcel 30 80 inicial \\}
+			Leyendo estado inicial... \\
+			El formato del archivo de entrada no es correcto.
+		}
 \end{itemize}
 
 \subsection{Código}
