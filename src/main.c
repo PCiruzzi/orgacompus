@@ -47,6 +47,13 @@ FILE* verificarEntrada(char* argv3) {
   return entrada;
 }
 
+void eliminarExtension(char*s){
+	char* c;
+	c = strrchr (s, '.');
+	    if (c != NULL)
+	        *c = '\0';
+}
+
 bool verificarParametros(int argc, char* argv[], int* regla, int* N, FILE** entrada, char **salida) {
   //Recordar que argv tiene uno mas que los parametros que vienen de consola
   if (argc == 2)
@@ -66,12 +73,12 @@ bool verificarParametros(int argc, char* argv[], int* regla, int* N, FILE** entr
         fprintf(stderr, "El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.\n");
         return false;
       }
-      //El nombre del archivo de salida podria ser cualquier cosa, asique no verifico nada.
-      //TODO: Eliminar extension del archivo para que no quede con 2 posibles extensiones
       *salida = argv[5];
-    } else //El nombre de la salida es el nombre de la entrada. Luego se le agregara la extension .pbm
-      //TODO: Eliminar extension del archivo para que no quede con 2 posibles extensiones
+      eliminarExtension(*salida);
+    } else {
       *salida = argv[3];
+      eliminarExtension(*salida);
+    }
   } else {
     fprintf(stderr, "El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.\n");
     return false;
