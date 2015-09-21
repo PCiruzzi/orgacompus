@@ -10,6 +10,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
 \usepackage{mips}
+\usepackage[section]{placeins}
 \usepackage{pdfpages}
 
 
@@ -250,20 +251,46 @@ Stack Size función \textit{proximo}:  24
 \newpage
 
 \section{Resultados}
-A continuación presentaremos los resultados de las corridas pedidas por los docentes de la materia.
-\par ACA PONER LAS SALIDAS DE LOS .PBM
+En las figuras \ref{fig:regla30}, \ref{fig:regla110} y \ref{fig:regla126} podemos observar los resultados de las corridas pedidas por los docentes de la materia. Todas ellas parten de un archivo inicial de 80 caracteres con una celda ocupada en el centro: \\
+\emph{\textbf{\$ cat inicial \\}
+00000000000000000000000000000000000000010000000000000000000000000000000000000000 \\}
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[scale=0.65]{../salida3080Mips.pdf}
+	\caption{Regla 30}
+	\label{fig:regla30}
+\end{figure}
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[scale=0.65]{../salida11080Mips.pdf}
+	\caption{Regla 110}
+	\label{fig:regla110}
+\end{figure}
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[scale=0.65]{../salida12680Mips.pdf}
+	\caption{Regla 126}
+	\label{fig:regla126}
+\end{figure}
 
 \section{Conclusiones}
 
 \par De este trabajo practico se pudo aprender como programar con el conjunto de instrucciones Assembly de MIPS32, asi como tambien la utilizacion correcta de la ABI de la catedra, entendiendo de esta manera como funciona una computadora a bajo nivel.
 \par Mencionar el hecho de que en NetBSD corre más lento!
 
+\newpage
+
 \section{Referencias}
 \noindent[1] The NetBSD project, \url{http://www.netbsd.org/}.\\ \relax
 [2] GXemul, \url{http://gavare.se/gxemul/}.\\ \relax
 [3] Autómatas celulares elementales: \url{http://mathworld.wolfram.com/ElementaryCellularAutomaton.html}.\\ \relax
-[4] func call conv.pdf, en el area de Material de los archivos del grupo de Yahoo.\\ \relax
+[4] func\_call\_conv.pdf, en el area de Material de los archivos del grupo de Yahoo.\\ \relax
 [5] Formato PBM: \url{http://netpbm.sourceforge.net/doc/pbm.html}.\\ \relax
+
+\newpage
 
 \includepdf[pages={1-8}]{tp1-c2-2015.pdf}
 

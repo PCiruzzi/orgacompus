@@ -16,6 +16,6 @@ mips: as_proximo tp1_orga
 
 c: c_proximo tp1_orga
 	$(CC) proximo.o src/main.c -o $(PROG)
-	
+
 clean:
 	rm -rf *.o $(PROG)
