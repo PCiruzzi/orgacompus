@@ -13,6 +13,8 @@
 \usepackage[section]{placeins}
 \usepackage{pdfpages}
 \usepackage{enumitem}
+\usepackage{microtype}
+\DisableLigatures[-]{}
 
 
 \renewcommand{\labelitemi}{$\bullet$}
@@ -80,8 +82,8 @@ se creó un túnel reverso para saltear las limitaciones propias del GXemul:
 \emph{guestOS\$ ssh -R 2222:127.0.0.1:22 usuario@172.20.0.1}
 \\
 
-A partir de ese momento y dejando lo anterior en segundo plano, ya se puedo
-trabajar mediante SSH de manera más cómoda:
+A partir de ese momento y dejando lo anterior en segundo plano, ya se puede
+trabajar mediante \textit{SSH} de manera más cómoda:
 \\
 
 \emph{hostOS\$ ssh -p 2222 root@127.0.0.1}
@@ -108,7 +110,7 @@ Finalmente para limpiar los archivos:
 Teniendo en cuenta un archivo inicial de 80 caracteres de que tiene el siguiente formato: \\
 \emph{\textbf{\$ cat inicial \\}
 00000000000000000000000000000000000000010000000000000000000000000000 000000000000 \\}
-Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron las siguientes pruebas:
+Y no habiendo ningun otro archivo en la carpeta raíz del proyecto, se hicieron las siguientes pruebas:
 \begin{itemize}
 	\NumTabs{4}
 	\item Como primer medida ejecutamos el comando -h para ver la ayuda: 
@@ -135,7 +137,7 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 					Si no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.
 			\end{itemize}
 		}
-	\item Y luego el comando -V para ver la version: 
+	\item Y luego el comando -V para ver la versión: 
 		\emph{
 			\begin{itemize}[noitemsep,nolistsep]
 				\item \textbf{\$ autcel -V \\}
@@ -157,14 +159,14 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 					Listo.
 			\end{itemize}
 		}
-	\item Luego probamos sin enviar ningun tipo de parametro: 
+	\item Luego probamos sin enviar ningun tipo de parámetro: 
 		\emph{
 			\begin{itemize}[noitemsep,nolistsep]
 				\item \textbf{\$ autcel \\}
 					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
 			\end{itemize}
 		}
-	\item Y también cualquier otra idea que se nos ocurrió: 
+	\item Y también cualquier otra idea que se nos ocurrió. Estos son algunos ejemplos: 
 		\emph{		
 			\begin{itemize}[noitemsep,nolistsep]
 				\item \textbf{\$ ./autcel -p \\}
@@ -211,7 +213,7 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 					Leyendo estado inicial... \\
 					El formato del archivo de entrada no es correcto. \\
 				\item \textbf{\$ cat inicial \\}
-	0000000000000000000000000000000000000001000000000000000000 000000000000000000000\underline{h}\\
+					0000000000000000000000000000000000000001000000000000000000 000000000000000000000\underline{h}\\
 					\textbf{\$ ./autcel 30 80 inicial \\}
 					Leyendo estado inicial... \\
 					El formato del archivo de entrada no es correcto.
@@ -254,7 +256,7 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 
 \subsection{Diagrama de Stack}
 \subsubsection{Función proximo}
-Aquí presentamos un diagrama del Stack de la función \textit{proximo}. Vale aclarar que en el mismo, se incluye el ABA (Argument Building Area) de la función que la llama (En este caso la función \textit{calcularFilas}). Como la cantidad de argumentos que recibe \textit{proximo} es mayor que 4, necesitamos agregarlos a ``mano'' y, para que quede múltiplo de 8 bytes, agregamos un padding. A su vez, al ser \textit{proximo} una función ``hoja'', su stack no posee ABA.
+Aquí presentamos un diagrama del Stack de la función \textit{proximo}. Vale aclarar que en el mismo, se incluye el ABA (Argument Building Area) de la función caller (En este caso la función \textit{calcularFilas}). Además, como la cantidad de argumentos que recibe \textit{proximo} es mayor que 4, necesitamos agregarlos a ``mano'' y, para que quede múltiplo de 8 bytes, agregamos un padding. A su vez, al ser \textit{proximo} una función ``hoja'', su stack no posee ABA.
 \par Por otra parte también consideramos importante mencionar que tanto el SRA (Saved Register Area, que incluye al GP y FP) como LTA (Local Temporary Area, que incluye a las varibles utilizadas en la función) son múltiplo de 8 bytes, por lo que no requieren del agregado de un padding. \\
 \\
 Stack Size función \textit{proximo}:  24
@@ -282,18 +284,18 @@ Stack Size función \textit{proximo}:  24
 \section{Resultados}
 En las figuras \ref{fig:regla30}, \ref{fig:regla110} y \ref{fig:regla126} podemos observar los resultados de las corridas pedidas por los docentes de la materia. Todas ellas parten de un archivo inicial de 80 caracteres con una celda ocupada en el centro: \\
 \emph{\textbf{\$ cat inicial \\}
-00000000000000000000000000000000000000010000000000000000000000000000000000000000 \\}
+000000000000000000000000000000000000000100000000000000000000000000000 00000000000 \\}
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.65]{../salida3080Mips.pdf}
+	\includegraphics[scale=0.64]{../salida3080Mips.pdf}
 	\caption{Regla 30.}
 	\label{fig:regla30}
 \end{figure}
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.65]{../salida11080Mips.pdf}
+	\includegraphics[scale=0.64]{../salida11080Mips.pdf}
 	\caption{Regla 110.}
 	\label{fig:regla110}
 \end{figure}
@@ -316,8 +318,8 @@ En las figuras \ref{fig:regla30}, \ref{fig:regla110} y \ref{fig:regla126} podemo
 
 \section{Conclusiones}
 
-\par De este trabajo práctico se pudo aprender como programar con el conjunto de instrucciones Assembly de MIPS32, así como también la utilización correcta de la ABI propuesta por la cátedra, entendiendo de esta manera cómo funciona una computadora a bajo nivel.
-\par El crear la función proximo tanto en C como en assembler nos permitió entender como las instrucciones de mayor nivel pueden ser traducidas en un conjunto de instrucciones de bajo nivel. Esto también nos posibilitó observar las diferencias entre el código de assembler equivalente al de C escrito por nosotros comparado con el generado con \textit{gcc}, notando que este último es optimizado por el compilador y por lo tanto tendrá una mejor performance.
+\par De este trabajo práctico se pudo aprender cómo programar con el conjunto de instrucciones Assembly de MIPS32, así como también la utilización correcta de la ABI propuesta por la cátedra, entendiendo de esta manera cómo funciona una computadora a bajo nivel.
+\par El crear la función proximo tanto en C como en Assembler nos permitió entender como las instrucciones de un lenguaje de mayor nivel pueden ser traducidas en un conjunto de instrucciones de bajo nivel. Esto también nos posibilitó observar las diferencias entre el código de Assembler equivalente al de C escrito por nosotros comparado con el generado con \textit{gcc}, notando que este último es optimizado por el compilador y por lo tanto tendrá una mejor performance.
 
 \newpage
 
