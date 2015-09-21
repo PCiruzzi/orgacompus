@@ -94,6 +94,7 @@ derBorde:
 	addu	t3, t2, t0				#En t3 = N*i + A[0][0]
 	lbu		t3, 0(t3)				#Cargo en t3 = *(t3)
 	sb		t3, DERECHA($fp)		#Guardo t3 (celda derecha) en pos 4 del stack
+	b 		actual 					#Salto para calcular el actual
 
 derNoBorde:
 	lw		t0, PROXIMO_ARG4($fp)	#Cargo N en t0
