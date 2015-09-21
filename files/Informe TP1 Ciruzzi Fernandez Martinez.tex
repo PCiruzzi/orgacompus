@@ -12,6 +12,11 @@
 \usepackage{mips}
 \usepackage[section]{placeins}
 \usepackage{pdfpages}
+\usepackage{enumitem}
+
+
+\renewcommand{\labelitemi}{$\bullet$}
+\renewcommand{\labelitemii}{$\circ$}
 
 
 \title{		\textbf{Trabajo práctico \#1: conjunto de instrucciones MIPS}}
@@ -104,94 +109,116 @@ Teniendo en cuenta un archivo inicial de 80 caracteres de que tiene el siguiente
 00000000000000000000000000000000000000010000000000000000000000000000000000000000 \\}
 Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron las siguientes pruebas:
 \begin{itemize}
-\NumTabs{4}
-	\item Como primer medida ejecutamos el comando -h para ver la ayuda: \\
-		\emph{\textbf{\$ autcel -h \\}
-			Uso: \\
-			autcel -h \\
-			autcel -V \\
-			autcel R N inputfile [-o outputprefix] \\
-			 \\
-			Opciones: \\
-			\tab{-h, --help}
-			\tab{Imprime este mensaje.} \\
-			\tab{-V, --version}
-			\tab{Da la version del programa.} \\
-			\tab{-o}
-			\tab{Prefijo de los archivos de salida.} \\
-			 \\
-			Ejemplo: \\
-			autcel 30 80 inicial -o evolucion \\
-			Calcula la evolucion del automata ``Regla 30'', en un mundo unidimensional de 80 celdas, por 80 iteraciones. \\
-			El archivo de salida se llamara evolucion.pbm. \\
-			Si no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.
+	\NumTabs{4}
+	\item Como primer medida ejecutamos el comando -h para ver la ayuda: 
+		\emph{
+			\begin{itemize}[noitemsep,nolistsep]
+				\item \textbf{\$ autcel -h \\}
+					Uso: \\
+					autcel -h \\
+					autcel -V \\
+					autcel R N inputfile [-o outputprefix] \\
+					 \\
+					Opciones: \\
+					\tab{-h, --help}
+					\tab{Imprime este mensaje.} \\
+					\tab{-V, --version}
+					\tab{Da la version del programa.} \\
+					\tab{-o}
+					\tab{Prefijo de los archivos de salida.} \\
+					 \\
+					Ejemplo: \\
+					autcel 30 80 inicial -o evolucion \\
+					Calcula la evolucion del automata ``Regla 30'', en un mundo unidimensional de 80 celdas, por 80 iteraciones. \\
+					El archivo de salida se llamara evolucion.pbm. \\
+					Si no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.
+			\end{itemize}
 		}
-	\item Y luego el comando -V para ver la version: \\
-		\emph{\textbf{\$ autcel -V \\}
-			autcel: version 1.0
+	\item Y luego el comando -V para ver la version: 
+		\emph{
+			\begin{itemize}[noitemsep,nolistsep]
+				\item \textbf{\$ autcel -V \\}
+					autcel: version 1.0
+			\end{itemize}
 		}
-	\item Primero probamos los ``casos felices'': \\
-		\emph{\textbf{\$ ./autcel 30 80 inicial \\}
-			Leyendo estado inicial... \\
-			Calculando los 79 estados siguientes... \\
-			Grabando inicial.pbm \\
-			Listo. \\
-			\textbf{\$ ./autcel 30 80 inicial -o final \\}
-			Leyendo estado inicial... \\
-			Calculando los 79 estados siguientes... \\
-			Grabando final.pbm \\
-			Listo.
+	\item Primero probamos los ``casos felices'': 
+		\emph{
+  			\begin{itemize}[noitemsep,nolistsep]
+    				\item \textbf{\$ ./autcel 30 80 inicial \\}
+					Leyendo estado inicial... \\
+					Calculando los 79 estados siguientes... \\
+					Grabando inicial.pbm \\
+					Listo. \\
+				\item \textbf{\$ ./autcel 30 80 inicial -o final \\}
+					Leyendo estado inicial... \\
+					Calculando los 79 estados siguientes... \\
+					Grabando final.pbm \\
+					Listo.
+			\end{itemize}
 		}
-	\item Luego probamos sin enviar ningun tipo de parametro: \\
-		\emph{\textbf{\$ autcel \\}
-			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
+	\item Luego probamos sin enviar ningun tipo de parametro: 
+		\emph{
+			\begin{itemize}[noitemsep,nolistsep]
+				\item \textbf{\$ autcel \\}
+					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
+			\end{itemize}
 		}
-	\item Y también cualquier otra idea que se nos ocurrió: \\
-		\emph{\textbf{\$ ./autcel -p \\}
-			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
-			\textbf{\$ ./autcel 30 80 \\}
-			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
-			\textbf{\$ ./autcel 30 80 primero \\}
-			El archivo de entrada especificado no se ha podido abrir o no existe. \\
-			\textbf{\$ ./autcel -1 80 inicial \\}
-			El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
-			\textbf{\$ ./autcel 256 80 inicial \\}
-			El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
-			\textbf{\$ ./autcel hola 80 inicial \\}
-			El numero de regla no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
-			\textbf{\$ ./autcel 30 -8 inicial \\}
-			El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
-			\textbf{\$ ./autcel 30 hola inicial \\}
-			El numero de celdas e iteraciones (``N'') no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
-			\textbf{\$ ./autcel 30 11111 inicial \\}
-			El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
-			\textbf{\$ ./autcel 30 80 inicial final \\}
-			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
-			\textbf{\$ ./autcel 30 80 inicial -p final \\}
-			El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
+	\item Y también cualquier otra idea que se nos ocurrió: 
+		\emph{		
+			\begin{itemize}[noitemsep,nolistsep]
+				\item \textbf{\$ ./autcel -p \\}
+					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
+				\item \textbf{\$ ./autcel 30 80 \\}
+					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
+				\item \textbf{\$ ./autcel 30 80 primero \\}
+					El archivo de entrada especificado no se ha podido abrir o no existe. \\
+				\item \textbf{\$ ./autcel -1 80 inicial \\}
+					El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
+				\item \textbf{\$ ./autcel 256 80 inicial \\}
+					El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
+				\item \textbf{\$ ./autcel hola 80 inicial \\}
+					El numero de regla no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
+				\item \textbf{\$ ./autcel 30 -8 inicial \\}
+					El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
+				\item \textbf{\$ ./autcel 30 hola inicial \\}
+					El numero de celdas e iteraciones (``N'') no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
+				\item \textbf{\$ ./autcel 30 11111 inicial \\}
+					El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
+				\item \textbf{\$ ./autcel 30 80 inicial final \\}
+					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
+				\item \textbf{\$ ./autcel 30 80 inicial -p final \\}
+					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
+			\end{itemize}
 		}
-	\item Las próximas pruebas se refieren a errores en el archivo de entrada (Recordar que es un archivo de 80 caracteres, con todos 0 salvo el caracter central que es un 1): \\
-		\emph{\textbf{\$ ./autcel 30 15 inicial \\}
-			Leyendo estado inicial... \\
-			La cantidad de columnas en el archivo de entrada es mayor a la longitud indicada por ``N''. \\
-			\textbf{\$ ./autcel 30 90 inicial \\}
-			Leyendo estado inicial... \\
-			La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por ``N''.
+	\item Las próximas pruebas se refieren a errores en el archivo de entrada (Recordar que es un archivo de 80 caracteres, con todos 0 salvo el caracter central que es un 1): 
+		\emph{
+			\begin{itemize}[noitemsep,nolistsep]
+				\item \textbf{\$ ./autcel 30 15 inicial \\}
+					Leyendo estado inicial... \\
+					La cantidad de columnas en el archivo de entrada es mayor a la longitud indicada por ``N''. \\
+				\item \textbf{\$ ./autcel 30 90 inicial \\}
+					Leyendo estado inicial... \\
+					La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por ``N''.
+			\end{itemize}
 		}
-	\item Cambiando el archivo inicial de las maneras que muestra el comando \textit{cat}: \\
-		\emph{ \textbf{\$ cat inicial \\}
-			hola \\
-			\textbf{\$ ./autcel 30 80 inicial \\}
-			Leyendo estado inicial... \\
-			El formato del archivo de entrada no es correcto. \\
-			\textbf{\$ cat inicial \\}
-0000000000000000000000000000000000000001000000000000000000000000000000000000000\underline{h}\\
-			\textbf{\$ ./autcel 30 80 inicial \\}
-			Leyendo estado inicial... \\
-			El formato del archivo de entrada no es correcto.
+	\item Cambiando el archivo inicial de las maneras que muestra el comando \textit{cat}: 
+		\emph{
+			\begin{itemize}[noitemsep,nolistsep]
+				\item \textbf{\$ cat inicial \\}
+					hola \\
+					\textbf{\$ ./autcel 30 80 inicial \\}
+					Leyendo estado inicial... \\
+					El formato del archivo de entrada no es correcto. \\
+				\item \textbf{\$ cat inicial \\}
+	0000000000000000000000000000000000000001000000000000000000000000000000000000000\underline{h}\\
+					\textbf{\$ ./autcel 30 80 inicial \\}
+					Leyendo estado inicial... \\
+					El formato del archivo de entrada no es correcto.
+			\end{itemize}
 		}
 \end{itemize}
 
+\newpage
 \subsection{Código}
 \subsubsection{Código en C}
 \lstset{
@@ -199,13 +226,13 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 }
 \lstinputlisting{../src/proximo.h}
 \lstset{
-	title=main.c
-}
-\lstinputlisting{../src/main.c}
-\lstset{
 	title=proximo.c
 }
 \lstinputlisting{../src/proximo.c}
+\lstset{
+	title=main.c
+}
+\lstinputlisting{../src/main.c}
 
 \subsubsection{Código función proximo en Assembler}
 \lstset{
@@ -215,6 +242,7 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 }
 \lstinputlisting{../src/proximo.S}
 
+\newpage
 \subsubsection{Código del Makefile}
 \lstset{
 	language=[gnu] make,
