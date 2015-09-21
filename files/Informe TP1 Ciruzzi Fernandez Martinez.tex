@@ -193,33 +193,40 @@ Y no habiendo ningun otro archivo en la carpeta raiz del proyecto, se hicieron l
 \subsection{Código}
 \subsubsection{Código en C}
 \lstset{
-	language=C, columns=flexible, breaklines=true, frame=single, title=Listing : proximo.h
+	language=C, columns=flexible, breaklines=true, frame=single, title=proximo.h
 }
 \lstinputlisting{../src/proximo.h}
 \lstset{
-	title=Listing : main.c
+	title=main.c
 }
 \lstinputlisting{../src/main.c}
 \lstset{
-	title=Listing : proximo.c
+	title=proximo.c
 }
 \lstinputlisting{../src/proximo.c}
 
 \subsubsection{Código función proximo en Assembler}
 \lstset{
 	language=[mips]Assembler,
-	title=Listing : proximo.S,
+	title=proximo.S,
 	tabsize=4
 }
 \lstinputlisting{../src/proximo.S}
+
+\subsubsection{Código del Makefile}
+\lstset{
+	language=[gnu] make,
+	title=Makefile
+}
+\lstinputlisting{../Makefile}
 \pagebreak
 
-\section{Diagrama de Stack}
-\subsection{Proximo}
+\subsection{Diagrama de Stack}
+\subsubsection{Función proximo}
 Aquí presentamos un diagrama del Stack de la función \textit{proximo}. Vale aclarar que en el mismo, se incluye el ABA (Argument Building Area) de la función que la llama (En este caso la función \textit{calcularFilas}). Como la cantidad de argumentos que recibe \textit{proximo} es mayor que 4, necesitamos agregarlos a ``mano'' y, para que quede múltiplo de 8 bytes, agregamos un padding. A su vez, al ser \textit{proximo} una función ``hoja'', su stack no posee ABA.
 \par Por otra parte también consideramos importante mencionar que tanto el SRA (Saved Register Area, que incluye al GP y FP) como LTA (Local Temporary Area, que incluye a las varibles utilizadas en la función) son múltiplo de 8 bytes, por lo que no requieren del agregado de un padding. \\
 \\
-Stack Size función proximo:  24
+Stack Size función \textit{proximo}:  24
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|l|} \hline
@@ -231,10 +238,10 @@ Stack Size función proximo:  24
  A0&  24  \\ \hline
  FP&  20  \\ \hline
  GP&  16  \\ \hline
- POSICION&  12  \\ \hline
+ POS&  12  \\ \hline
  ACTUAL&  8  \\ \hline
- DERECHA&  4  \\	\hline
- IZQUIERDA&  0  \\ \hline
+ DER&  4  \\	\hline
+ IZQ&  0  \\ \hline
 \end{tabular}
 \caption {Stack de la función proximo}
 \end{table} \\
