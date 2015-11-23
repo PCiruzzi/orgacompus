@@ -13,8 +13,6 @@
 		"or":   {"type": "R", "args": ["reg", "reg", "reg"], "fields": {"op": 0, "rs": "#2", "rt": "#3", "rd": "#1", "shamt": 0, "func": 37}, "desc": "$t1 = $t2 | $t3"},
 		"nor":   {"type": "R", "args": ["reg", "reg", "reg"], "fields": {"op": 0, "rs": "#2", "rt": "#3", "rd": "#1", "shamt": 0, "func": 39}, "desc": "$t1 = ~($t2 | $t3)"},
 		"slt":  {"type": "R", "args": ["reg", "reg", "reg"], "fields": {"op": 0, "rs": "#2", "rt": "#3", "rd": "#1", "shamt": 0, "func": 42}, "desc": "$t1 = ($t2 < $t3) ? 1 : 0"},
-		"sll": {"type": "R", "args": ["reg", "reg", "reg"], "fields": {"op": 0, "rs": "#2", "rt": "#3", "rd": "#1", "shamt": "#3", "func": 0}, "desc": "$t1 = $t2 << $t3 = $t2 * 2^$t3"},
-		"srl": {"type": "R", "args": ["reg", "reg", "reg"], "fields": {"op": 0, "rs": "#2", "rt": "#3", "rd": "#1", "shamt": "#3", "func": 2}, "desc": "$t1 = $t2 >> $t3 = $t2 / 2^$t3"},
 		"j":    {"type": "J", "args": ["target"], "fields": {"op": 2, "target": "#1"}, "desc": "PC = target"},
 		"addi": {"type": "I", "args": ["reg", "reg", "int"], "fields": {"op": 8, "rs": "#2", "rt": "#1", "imm": "#3"}, "desc": "$t1 = $t2 + 23"},
 		"beq":  {"type": "I", "args": ["reg", "reg", "offset"], "fields": {"op": 4, "rs": "#1", "rt": "#2", "imm": "#3"}, "desc": "PC += ($t1 == $t2) ? (offset * 4 + 4) : 4"},
@@ -53,8 +51,6 @@
 			{"aluop": 2, "func": 36, "out": {"Operation": 0}},
 			{"aluop": 2, "func": 37, "out": {"Operation": 1}},
 			{"aluop": 2, "func": 39, "out": {"Operation": 12}},
-			{"aluop": 2, "func": 0, "out": {"Operation": 8}},
-			{"aluop": 2, "func": 2, "out": {"Operation": 9}},
 			{"aluop": 2, "func": 42, "out": {"Operation": 7}}
 		],
 		"operations": {
@@ -63,8 +59,6 @@
 			"2": "add",
 			"6": "sub",
 			"7": "slt",
-			"8": "sll",
-			"9": "srl",
 			"12": "nor"
 		}
 	}
