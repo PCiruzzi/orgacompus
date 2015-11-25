@@ -14,6 +14,7 @@
 		"slt":  {"type": "R", "args": ["reg", "reg", "reg"], "fields": {"op": 0, "rs": "#2", "rt": "#3", "rd": "#1", "shamt": 0, "func": 42}, "desc": "$t1 = ($t2 < $t3) ? 1 : 0"},
 		"addi": {"type": "I", "args": ["reg", "reg", "int"], "fields": {"op": 8, "rs": "#2", "rt": "#1", "imm": "#3"}, "desc": "$t1 = $t2 + 23"},
 		"beq":  {"type": "I", "args": ["reg", "reg", "offset"], "fields": {"op": 4, "rs": "#1", "rt": "#2", "imm": "#3"}, "desc": "PC += ($t1 == $t2) ? (offset * 4 + 4) : 4"},
+		"bne":  {"type": "I", "args": ["reg", "reg", "offset"], "fields": {"op": 5, "rs": "#1", "rt": "#2", "imm": "#3"}, "desc": "PC += ($t1 != $t2) ? (offset * 4 + 4) : 4"},
 		"lw":   {"type": "I", "args": ["reg", "data"], "fields": {"op": 35, "rs": "#2.offset", "rt": "#1", "imm": "#2.base"}, "desc": "$t1 = MEM[base + $t2]"},
 		"sw":   {"type": "I", "args": ["reg", "data"], "fields": {"op": 43, "rs": "#2.offset", "rt": "#1", "imm": "#2.base"}, "desc": "MEM[base + $t2] = $t1"}
 	},
@@ -25,6 +26,7 @@
 		"sgt":  {"args": ["reg", "reg", "reg"], "to": ["slt #1, #3, #2"], "desc": "$t1 = ($t2 > $t3) ? 1 : 0"},
 		"bge":  {"args": ["reg", "reg", "offset"], "to": ["slt $1, #1, #2", "beq $1, $0, #3"], "desc": "PC += ($t1 >= $t2) ? (offset * 4 + 4) : 4"},
 		"ble":  {"args": ["reg", "reg", "offset"], "to": ["sgt $1, #1, #2", "beq $1, $0, #3"], "desc": "PC += ($t1 <= $t2) ? (offset * 4 + 4) : 4"},
+		"blt":  {"args": ["reg", "reg", "offset"], "to": ["slt $1, #1, #2", "bne $1, $0, #3"], "desc": "PC += ($t1 < $t2) ? (offset * 4 + 4) : 4"},
 		"b":    {"args": ["offset"], "to": ["beq $0, $0, #1"], "desc": "PC += offset * 4 + 4"},
 		"neg":  {"args": ["reg", "reg"], "to": ["sub #1, $0, #2"], "desc": "$t1 = -$t2"},
 		"not":  {"args": ["reg", "reg"], "to": ["nor #1, #2, $0"], "desc": "$t1 = ~$t2"}
@@ -32,7 +34,8 @@
 	"control": {
 		"0": {"RegDst": 1, "RegWrite": 1, "ALUOp": 2, "ALUSrc": 0, "MemToReg": 0},
 		"8": {"RegDst": 0, "RegWrite": 1, "ALUOp": 0, "ALUSrc": 1, "MemToReg": 0},
-		"4": {"ALUOp": 1, "ALUSrc": 0, "Branch": 1},
+		"4": {"ALUOp": 1, "ALUSrc": 0, "BranchEQ": 1},
+		"5": {"ALUOp": 1, "ALUSrc": 0, "BranchNE": 1},
 		"35": {"ALUOp": 0, "ALUSrc": 1, "RegDst": 0, "RegWrite": 1, "MemRead": 1, "MemWrite": 0, "MemToReg": 1},
 		"43": {"ALUOp": 0, "ALUSrc": 1, "RegDst": 0, "RegWrite": 0, "MemRead": 0, "MemWrite": 1, "MemToReg": 0}
 	},
