@@ -45,7 +45,7 @@
 
 
 \begin{abstract}
-En este trabajo práctico se verán modificaciones a distintos datapaths de una arquitectura MIPS, con el fin de agregar algunas instrucciones que no han sido implementadas en el mismo, y así poder familiarizarse con dicho concepto. La herramienta utilizada fue el DrMIPS [1][2].
+En este trabajo práctico se verán modificaciones a distintos datapaths de una arquitectura MIPS, con el fin de agregar algunas instrucciones que no han sido implementadas en el mismo, y así poder familiarizarse con dicho concepto. La herramienta utilizada fue el DrMIPS version 2.0 [1][2].
 \end{abstract}
 \pagebreak 
 
@@ -53,284 +53,99 @@ En este trabajo práctico se verán modificaciones a distintos datapaths de una ar
 \pagebreak
 
 \section{Introducción}
-Un autómata celular es un modelo matemático para un sistema dinámico que evoluciona en pasos discretos; en este trabajo desarrollamos el autómata no trivial más simple que consiste en una retícula unidimensional de células que sólo pueden tener dos estados (0 o 1), con un vecindario constituido, para cada célula, de ella misma y de las dos células adyacentes ($2^{3}=8$ configuraciones posibles).
-\par Existen $2^{8}=256$ modos de definir cuál ha de ser el estado de una célula en la generación siguiente para cada una de estas configuraciones. Estos modos se codifican según un número (llamado de regla) propuesto por Stephen Wolfram.
-\par Dado un número de regla y un estado inicial de N celdas, este programa se encarga de calcular los siguientes N estados para dicha configuración y escribirlos en una imagen de formato pbm.
-
+\par DrMIPS nos permite modificar el datapath de la arquietectura MIPS32 y el conjunto de instrucciones. Lo usaremos para agregar las siguientes instrucciones, tres de ellas, \emph{sll}, \emph{srl}, \emph{jr} al datapath monociclo y las otras dos, \emph{j} y \emph{blt} al datapath pipeline.
+\par Para lograrlo, agregaremos nuevos componentes al datapath y modificaremos el set de instrucciones, según sea necesario.
 \section{Desarrollo}
-\subsection{Herramienta}
-La herramienta utilizada para llevar a cabo el desarrollo del trabajo práctico fue el DrMIPS [1][2]. Éste es un programa \textit{open-source}, y que cuenta con la documentación completa correspondiente. En cuanto a la instalación de la misma es bastante simple, ya que basta con ejecutar los siguientes comandos:
-\\
-\\
-\emph{sudo add-apt-repository ppa:brunonova/ppa \\
-sudo apt-get update \\
-sudo apt-get install drmips}
 
 \subsection{Punto 1}
+\par En este ítem, se agregaron las instrucciones \emph{sll} y \emph{srl} al datapath monociclo. Para ello, no fue necesario modificar el datapath, simplemente bastó con agregar las instrucciones al set de instrucciones.
+\subsubsection{Set de instrucciones modificado}
+Se agregaron las siguientes lineas al campo \emph{instructions} del set:
+\begin{verbatim}
+"sll": {
+        "type": "R", "args": ["reg", "reg", "reg"],
+        "fields": {"op": 0, "rs": "#2", "rt": "#3", 
+                   "rd": "#1", "shamt": "#3", "func": 0}, 
+        "desc": "$t1 = $t2 << $t3 = $t2 * 2^$t3"
+},
+"srl": {
+        "type": "R", "args": ["reg", "reg", "reg"], 
+        "fields": {"op": 0, "rs": "#2", "rt": "#3", 
+                   "rd": "#1", "shamt": "#3", "func": 2}, 
+        "desc": "$t1 = $t2 >> $t3 = $t2 / 2^$t3"
+},
+\end{verbatim}
+\par Lo que esto hace, es definir dos instrucciones nuevas del tipo R, que reciben como argumento tres registros. Luego, el campo \emph{func}, junto con el \emph{aluop}, será el que referencie a estras instrucciones en la sección de control de la ALU, por lo tanto, al ejecutarlas, la entrada de la ALU será la especificada. Por último, debemos asociar esta entrada con la operación a realizarse, esto lo hacemos en la configuración de la ALU de la siguiente manera:
+\begin{verbatim}
+"alu": {
+        ...
+        "control": [
+            ...
+            {"aluop": 2, "func": 0, "out": {"Operation": 8}},
+            {"aluop": 2, "func": 2, "out": {"Operation": 9}},
+            ...
+        ],
+        "operations": {
+            ...
+            "8": "sll",
+            "9": "srl",
+            ...
+        }
+}
+\end{verbatim}
+\par Esto le indica a la sección de control de la ALU, que ante el \emph{aluop}=2 y \emph{func}=0, debe ejecutar la operación 8, en este caso definida como \emph{sll}, análogamente ocurre con \emph{srl}.
+\subsubsection{Pruebas de sll y srl}
+\bigskip
+\noindent \textbf{Prueba 1:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4
+}
+\lstinputlisting{../punto1/prueba.asm}
+\medskip
+\textbf{Prueba 2:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4
+}
+\lstinputlisting{../punto1/prueba2.asm}
+\medskip
+\textbf{Prueba 3:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4
+}
+\lstinputlisting{../punto1/prueba3.asm}
+\medskip
+\textbf{Prueba 4:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4
+}
+\lstinputlisting{../punto1/prueba4.asm}
+\medskip
+\textbf{Prueba 5:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4
+}
+\lstinputlisting{../punto1/prueba5.asm}
 
 \subsection{Punto 2}
-
 \subsection{Punto 3}
-
 \subsection{Punto 4}
-
-\subsection{Recursos y Portabilidad}
-
-Uno de los objetivos del trabajo práctico es poder probar la portabilidad del
-programa en diferentes entornos. En el enunciado se pedía que el programa se pudiera ejecutar en NetBSD[1] (usando el simulador GXemul[2]) y en la versión de Linux (Knoppix, RedHat, Debian, Ubuntu) usada para correr el simulador. En particular, se lo probó en Ubuntu 14.04. En GXemul se corrió una máquina de arquitectura MIPS cuyo sistema operativo era una versión reciente de NetBSD. La transferencia de archivos entre la máquina host y la guest se hizo mediante \textit{SSH}. Se procedió de la siguiente manera:
-
-Para trabajar con el GXemul se procedió primero creando una nueva interfaz de red (debe crearse cada vez que se inicia el \textit{host} y con permisos de administrador):
-\\
-
-\emph{hostOS\$ sudo ifconfig lo:0 172.20.0.1}
-\\
-
-Luego se ejecutó el GXemul en modo X:
-\\
-
-\emph{hostOS\$ ./xgxemul -e 3max -d netbsd-pmax.img -x}
-\\
-
-Una vez ya ingresado con el usuario y la contraseña en la máquina simulada,
-se creó un túnel reverso para saltear las limitaciones propias del GXemul:
-\\
-
-\emph{guestOS\$ ssh -R 2222:127.0.0.1:22 usuario@172.20.0.1}
-\\
-
-A partir de ese momento y dejando lo anterior en segundo plano, ya se puede
-trabajar mediante \textit{SSH} de manera más cómoda:
-\\
-
-\emph{hostOS\$ ssh -p 2222 root@127.0.0.1}
-\\
-
-\subsection{Implementación}
-La implementación del autómata celular unidimensional[3], tal como se lo explicó en la sección \textit{Introducción}, se hizo íntegramente en el lenguaje de programación C. Luego, también se desarrolló una de las funciones que ya se había implementado en C, en Assembler de una máquina de arquitectura MIPS32. La función a desarrollar en ambos lenguajes fue la función \textit{proximo} la cual, dadas la matriz y la celda que se quiere saber su próximo estado, devuelve este último. Para el pasaje entre C y Assembler se hizo uso de la ABI [4] explicada en la materia.
-\par El resultado de la ejecución del programa es guardado en un archivo PBM[5] el cual muestra el avance del autómata a través de los pasos discretos.
-
-\subsection{Compilación}
-
-Para compilar el trabajo práctico, realizamos un Makefile para hacer mas sencilla esta tarea.\\
-
-\par Para compilar para C:
-\emph{make c}\\
-
-Para compilar para MIPS:
-\emph{make mips}\\
-
-Finalmente para limpiar los archivos:
-\emph{make clean}
-
-\subsection{Corrida de Pruebas}
-Teniendo en cuenta un archivo inicial de 80 caracteres de que tiene el siguiente formato: \\
-\emph{\textbf{\$ cat inicial \\}
-00000000000000000000000000000000000000010000000000000000000000000000 000000000000 \\}
-Y no habiendo ningun otro archivo en la carpeta raíz del proyecto, se hicieron las siguientes pruebas:
-\begin{itemize}
-	\NumTabs{4}
-	\item Como primer medida ejecutamos el comando -h para ver la ayuda: 
-		\emph{
-			\begin{itemize}[noitemsep,nolistsep]
-				\item \textbf{\$ autcel -h \\}
-					Uso: \\
-					autcel -h \\
-					autcel -V \\
-					autcel R N inputfile [-o outputprefix] \\
-					 \\
-					Opciones: \\
-					\tab{-h, --help}
-					\tab{Imprime este mensaje.} \\
-					\tab{-V, --version}
-					\tab{Da la version del programa.} \\
-					\tab{-o}
-					\tab{Prefijo de los archivos de salida.} \\
-					 \\
-					Ejemplo: \\
-					autcel 30 80 inicial -o evolucion \\
-					Calcula la evolucion del automata ``Regla 30'', en un mundo unidimensional de 80 celdas, por 80 iteraciones. \\
-					El archivo de salida se llamara evolucion.pbm. \\
-					Si no se da un prefijo para los archivos de salida, el prefijo sera el nombre del archivo de entrada.
-			\end{itemize}
-		}
-	\item Y luego el comando -V para ver la versión: 
-		\emph{
-			\begin{itemize}[noitemsep,nolistsep]
-				\item \textbf{\$ autcel -V \\}
-					autcel: version 1.0
-			\end{itemize}
-		}
-	\item Primero probamos los ``casos felices'': 
-		\emph{
-  			\begin{itemize}[noitemsep,nolistsep]
-    				\item \textbf{\$ ./autcel 30 80 inicial \\}
-					Leyendo estado inicial... \\
-					Calculando los 79 estados siguientes... \\
-					Grabando inicial.pbm \\
-					Listo. \\
-				\item \textbf{\$ ./autcel 30 80 inicial -o final \\}
-					Leyendo estado inicial... \\
-					Calculando los 79 estados siguientes... \\
-					Grabando final.pbm \\
-					Listo.
-			\end{itemize}
-		}
-	\item Luego probamos sin enviar ningun tipo de parámetro: 
-		\emph{
-			\begin{itemize}[noitemsep,nolistsep]
-				\item \textbf{\$ autcel \\}
-					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
-			\end{itemize}
-		}
-	\item Y también cualquier otra idea que se nos ocurrió. Estos son algunos ejemplos: 
-		\emph{		
-			\begin{itemize}[noitemsep,nolistsep]
-				\item \textbf{\$ ./autcel -p \\}
-					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
-				\item \textbf{\$ ./autcel 30 80 \\}
-					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
-				\item \textbf{\$ ./autcel 30 80 primero \\}
-					El archivo de entrada especificado no se ha podido abrir o no existe. \\
-				\item \textbf{\$ ./autcel -1 80 inicial \\}
-					El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
-				\item \textbf{\$ ./autcel 256 80 inicial \\}
-					El numero de regla no es valido. Debe ser un valor numerico entre 0 y 255. \\
-				\item \textbf{\$ ./autcel hola 80 inicial \\}
-					El numero de regla no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
-				\item \textbf{\$ ./autcel 30 -8 inicial \\}
-					El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
-				\item \textbf{\$ ./autcel 30 hola inicial \\}
-					El numero de celdas e iteraciones (``N'') no es valido. El mismo no contiene un valor numerico o se ha producido un overflow. \\
-				\item \textbf{\$ ./autcel 30 11111 inicial \\}
-					El numero de celdas e iteraciones (``N'') no es valido. Debe ser un valor numerico entre 1 y 10000. \\
-				\item \textbf{\$ ./autcel 30 80 inicial final \\}
-					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help. \\
-				\item \textbf{\$ ./autcel 30 80 inicial -p final \\}
-					El comando ejecutado no respeta la sintaxis. Para mas ayuda ejecutar el programa con -h o --help.
-			\end{itemize}
-		}
-	\item Las próximas pruebas se refieren a errores en el archivo de entrada (Recordar que es un archivo de 80 caracteres, con todos 0 salvo el caracter central que es un 1): 
-		\emph{
-			\begin{itemize}[noitemsep,nolistsep]
-				\item \textbf{\$ ./autcel 30 15 inicial \\}
-					Leyendo estado inicial... \\
-					La cantidad de columnas en el archivo de entrada es mayor a la longitud indicada por ``N''. \\
-				\item \textbf{\$ ./autcel 30 90 inicial \\}
-					Leyendo estado inicial... \\
-					La cantidad de columnas en el archivo de entrada es menor a la longitud indicada por ``N''.
-			\end{itemize}
-		}
-	\item Cambiando el archivo inicial de las maneras que muestra el comando \textit{cat}: 
-		\emph{
-			\begin{itemize}[noitemsep,nolistsep]
-				\item \textbf{\$ cat inicial \\}
-					hola \\
-					\textbf{\$ ./autcel 30 80 inicial \\}
-					Leyendo estado inicial... \\
-					El formato del archivo de entrada no es correcto. \\
-				\item \textbf{\$ cat inicial \\}
-					0000000000000000000000000000000000000001000000000000000000 000000000000000000000\underline{h}\\
-					\textbf{\$ ./autcel 30 80 inicial \\}
-					Leyendo estado inicial... \\
-					El formato del archivo de entrada no es correcto.
-			\end{itemize}
-		}
-\end{itemize}
-
-\newpage
-\subsection{Código}
-\subsubsection{Código en C}
-\lstset{
-	language=C, columns=flexible, breaklines=true, frame=single, title=proximo.h
-}
-\lstinputlisting{../../tp1/src/proximo.h}
-
-\subsubsection{Código función proximo en Assembler}
-
-\subsubsection{Código del Makefile}
-
-\pagebreak
-
-\subsection{Diagrama de Stack}
-\subsubsection{Función proximo}
-Aquí presentamos un diagrama del Stack de la función \textit{proximo}. Vale aclarar que en el mismo, se incluye el ABA (Argument Building Area) de la función caller (En este caso la función \textit{calcularFilas}). Además, como la cantidad de argumentos que recibe \textit{proximo} es mayor que 4, necesitamos agregarlos a ``mano'' y, para que quede múltiplo de 8 bytes, agregamos un padding. A su vez, al ser \textit{proximo} una función ``hoja'', su stack no posee ABA.
-\par Por otra parte también consideramos importante mencionar que tanto el SRA (Saved Register Area, que incluye al GP y FP) como LTA (Local Temporary Area, que incluye a las varibles utilizadas en la función) son múltiplo de 8 bytes, por lo que no requieren del agregado de un padding. \\
-\\
-Stack Size función \textit{proximo}:  24
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|} \hline
- PADDING& 44 \\ \hline %Hay que ponerlo no??
- A4&  40  \\ \hline
- A3&  36  \\ \hline
- A2&  32  \\ \hline
- A1&  28  \\ \hline
- A0&  24  \\ \hline
- FP&  20  \\ \hline
- GP&  16  \\ \hline
- POS&  12  \\ \hline
- ACTUAL&  8  \\ \hline
- DER&  4  \\	\hline
- IZQ&  0  \\ \hline
-\end{tabular}
-\caption {Stack de la función proximo}
-\end{table} \\
-
-\newpage
-
-\section{Resultados}
-En las figuras \ref{fig:regla30}, \ref{fig:regla110} y \ref{fig:regla126} podemos observar los resultados de las corridas pedidas por los docentes de la materia. Todas ellas parten de un archivo inicial de 80 caracteres con una celda ocupada en el centro: \\
-\emph{\textbf{\$ cat inicial \\}
-000000000000000000000000000000000000000100000000000000000000000000000 00000000000 \\}
-
-%\begin{figure}[!htb]
-%	\centering
-%	\includegraphics[scale=0.64]{../salida3080Mips.pdf}
-%	\caption{Regla 30.}
-%	\label{fig:regla30}
-%\end{figure}
-
-%\begin{figure}[!htb]
-%	\centering
-%	\includegraphics[scale=0.64]{../salida11080Mips.pdf}
-%	\caption{Regla 110.}
-%	\label{fig:regla110}
-%\end{figure}
-
-%\begin{figure}[!htb]
-%	\centering
-%	\includegraphics[scale=0.65]{../salida12680Mips.pdf}
-%	\caption{Regla 126.}
-%	\label{fig:regla126}
-%\end{figure}
-
-\par Podemos observar que en los casos de las reglas 30 y 110 se corresponde con el resultado esperado [6][7]; no así en el caso de la regla 126, donde se puede ver que lo esperado [8] no se corresponde con la figura \ref{fig:regla126}. La explicación que encontramos es que el resultado mostrado en [8] posee 80 iteraciones (alto), pero de ancho posee más pixels. Debido a esto y a que se utiliza la hipótesis del mundo toroidal\footnote{Hipótesis del mundo toroidal: la columna \textit{N}$-$1 pasa a ser vecina de la columna 0, por lo que el vecino izquierdo de la celda [i, 0] es el [i, \textit{N}$-$1], y viceversa. Recordarla también a la hora de hacer la comparación de imágenes.}, en el momento en que los pixels negros llegan a los extremos, los vecinos de una y otra ``versión'' pueden diferir y de aquí es que surgen las diferencias. En la figura \ref{fig:regla126_512pixels} podemos ver una versión de la regla 126 con un \textit{N} mayor, por lo que hasta la iteración 80 (y más también) se está en ``igualdad de condiciones'' con nuestra referencia. Aquí sí podemos observar que ambas imágenes son iguales.
-
-%\begin{figure}[!htb]
-%	\centering
-%	\includegraphics[scale=0.15]{../salida126512Mips.pdf}
-%	\caption{Regla 126 con N=512.}
-%	\label{fig:regla126_512pixels}
-%\end{figure}
 
 \section{Conclusiones}
 
-\par De este trabajo práctico se pudo aprender cómo programar con el conjunto de instrucciones Assembly de MIPS32, así como también la utilización correcta de la ABI propuesta por la cátedra, entendiendo de esta manera cómo funciona una computadora a bajo nivel.
-\par El crear la función proximo tanto en C como en Assembler nos permitió entender como las instrucciones de un lenguaje de mayor nivel pueden ser traducidas en un conjunto de instrucciones de bajo nivel. Esto también nos posibilitó observar las diferencias entre el código de Assembler equivalente al de C escrito por nosotros comparado con el generado con \textit{gcc}, notando que este último es optimizado por el compilador y por lo tanto tendrá una mejor performance.
+\par Realizar este trabajo práctico nos permitió familiarizarnos con la arquitectura de CPU MIPS y con el simulador DrMiIPS. Nos sirvió para comprender como funciona el datapath monociclo y el pipeline, también para darnos cuenta que hay distintas formas de implementar una instrucción. 
+\par En algunos casos es posible agregar instrucciones sin modificar el datapath, como en el caso de las instrucciones \emph{sll} y \emph{srl}, pero generalmente requiere el agregado de nuevos componentes, lo que implica más costos, un aumento en la complejidad del datapath y posiblemente una disminución en la velocidad de ejecución. Por lo cual, a la hora de elegir si agregar una nueva instrucción, deben considerarse estas desventajas.
+\par Por último, pudimos observar que en determinados casos, como en el de \emph{blt}, no es posible agregar una nueva instrucción al datapath, sino que es necesario implementarla como una combinación de instrucciones ya existentes.
 
 \newpage
 
 \section{Referencias}
 \noindent[1] DrMIPS, \url{https://bitbucket.org/brunonova/drmips/wiki/Home}.\\ \relax
 [2] DrMIPS, \url{https://https://github.com/brunonova/drmips}.\\ \relax
-[1] The NetBSD project, \url{http://www.netbsd.org/}.\\ \relax
-[2] GXemul, \url{http://gavare.se/gxemul/}.\\ \relax
-[3] Autómatas celulares elementales: \url{http://mathworld.wolfram.com/ ElementaryCellularAutomaton.html}.\\ \relax
-[4] func\_call\_conv.pdf, en el área de Material de los archivos del grupo Yahoo del curso.\\ \relax
-[5] Formato PBM: \url{http://netpbm.sourceforge.net/doc/pbm.html}.\\ \relax
-[6] Regla 30: \url{http://www.wolframalpha.com/input/?i=rule+30\%2C+80+steps}\\ \relax
-[7] Regla 110: \url{http://www.wolframalpha.com/input/?i=rule+110\%2C+80+steps}\\ \relax
-[8] Regla 126: \url{http://www.wolframalpha.com/input/?i=rule+126\%2C+80+steps}\\ \relax
 
 \newpage
 
