@@ -1,8 +1,5 @@
 	li $t1,1
 	j hola
-	nop
-	nop
-	nop
 	li $t2,2
 hola:
 	li $t3,3
