@@ -1,5 +1,5 @@
 	li $t8, 8 #direccion en bytes de la 
-		  #instruccion de inicio (beq...)
+			  #instruccion de inicio (beq...)
 	li $t0, 1
 inicio:
 	beq $t0, $0, fin
@@ -12,5 +12,6 @@ inicio:
 	li $t5, 5
 fin:
 	li $t6, 6
-# al finalizar el programa deberian quedar t0=0, t1=1,
-# t2=2, t3=3, t6=6 y t4 y t5 no deberian ser modificados
+	# al finalizar deberian quedar
+	# - t0=0, t1=1, t2=2, t3=3, t6=6
+	# - t4 y t5 no deberian ser modificados

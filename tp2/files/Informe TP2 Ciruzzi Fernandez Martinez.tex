@@ -53,8 +53,8 @@ En este trabajo práctico se verán modificaciones a distintos datapaths de una ar
 \pagebreak
 
 \section{Introducción}
-\par DrMIPS nos permite modificar el datapath de la arquietectura MIPS32 y el conjunto de instrucciones. Lo usaremos para agregar las siguientes instrucciones: tres de ellas (\emph{sll}, \emph{srl} y \emph{jr}) al datapath monociclo y las otras dos (\emph{j} y \emph{blt}) al datapath pipeline.
-\par Para lograrlo, agregaremos nuevos componentes al datapath y modificaremos el set de instrucciones, según sea necesario.
+\par DrMIPS [1][2] nos permite modificar el datapath de una arquitectura MIPS32 y su conjunto de instrucciones. Usaremos esta herramienta para agregar las siguientes instrucciones: tres de ellas (\emph{sll}, \emph{srl} y \emph{jr}) al datapath monociclo y las otras dos (\emph{j} y \emph{blt}) al datapath pipeline.
+\par Para lograrlo, agregaremos nuevos componentes al datapath y/o modificaremos el set de instrucciones, según sea necesario.
 
 \section{Desarrollo}
 \par Para el desarrollo del TP se utilizaron 2 \emph{datapaths} distintos como base: uno monociclo y otro multiciclo, los cuales se muestran en las figuras \ref{fig:DPmonocicloOrig} y \ref{fig:DPpipelineOrig} respectivamente. Cada uno de ellos se usó con su respectivo set de instrucciones. Ambas cosas eran simplemente modificables mediante un archivo JSON.
@@ -70,7 +70,7 @@ En este trabajo práctico se verán modificaciones a distintos datapaths de una ar
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.4]{img/DPpipelineOriginal.pdf}
+	\includegraphics[scale=0.37]{img/DPpipelineOriginal.pdf}
 	\caption{Datapath pipeline.}
 	\label{fig:DPpipelineOrig}
 \end{figure}
@@ -94,7 +94,7 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
         "desc": "$t1 = $t2 >> $t3 = $t2 / 2^$t3"
 },
 \end{verbatim}
-\par Lo que esto hace, es definir dos instrucciones nuevas del tipo R, que reciben como argumento tres registros. Luego, el campo \emph{func}, junto con el \emph{aluop}, será el que referencie a estas instrucciones en la sección de control de la ALU, por lo tanto, al ejecutarlas, la entrada de la ALU será la especificada. Por último, debemos asociar esta entrada con la operación a realizarse, esto lo hacemos en la configuración de la ALU de la siguiente manera:
+\par Lo que esto hace, es definir dos instrucciones nuevas del tipo R, que reciben como argumento tres registros. Lo más importante a destacar es el uso del campo \emph{shamt}, que generalmente no se utiliza en otras instrucciones. Luego, el campo \emph{func}, junto con el \emph{aluop}, será el que referencie a estas instrucciones en la sección de control de la ALU, por lo tanto, al ejecutarlas, la entrada de la ALU será la especificada. Por último, debemos asociar esta entrada con la operación a realizarse, esto lo hacemos en la configuración de la ALU de la siguiente manera:
 \begin{verbatim}
 "alu": {
     ...
@@ -115,7 +115,7 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
 \par Esto le indica a la sección de control de la ALU, que ante el \emph{aluop}=2 y \emph{func}=0, debe ejecutar la operación 8, en este caso definida como \emph{sll}, lo cual ocurre análogamente con \emph{srl}.
 
 \subsubsection{Pruebas de sll y srl}
-\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de las nuevas instrucciones: \\
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de las nuevas instrucciones:
 
 \bigskip
 \noindent \textbf{Prueba 1:}
@@ -173,13 +173,6 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
 
 \par Podemos notar en contraste con la figura \ref{fig:DPmonocicloOrig} que hay un multiplexor y un \emph{``shifter''} a izquierda de más. Siguiendo esta idea, pero un poco más complejo por ser multiciclo, podemos ver la diferencia entre la figura \ref{fig:DPpipelineOrig} y \ref{fig:DPpipelineJump}, donde se aplica este mismo concepto para la resolución de este punto.
 
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[scale=0.4]{img/DPpipelineJump.pdf}
-	\caption{Datapath pipeline con instrucción \emph{jump}.}
-	\label{fig:DPpipelineJump}
-\end{figure}
-
 \subsubsection{Modificación al set de instrucciones}
 \par Para llevar a cabo este punto, primero que nada se agregó tanto el tipo de instrucción J, así como también la instrucción propiamente dicha al set de instrucciones \emph{default-no-jump.set}.
 \begin{verbatim}
@@ -195,6 +188,13 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
     ...
 }
 \end{verbatim}
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[scale=0.37]{img/DPpipelineJump.pdf}
+	\caption{Datapath pipeline con instrucción \emph{jump}.\protect\footnotemark}
+	\label{fig:DPpipelineJump}
+\end{figure}
+\footnotetext{Se decidió no remarcar los componentes agregados ya que se perdía claridad de la conexión de los cables.}
 \par Por otro lado, se agregó una salida de \emph{jump} en la unidad de Control, que indique si la instrucción es de jump:
 \begin{verbatim}
 "control": {
@@ -205,12 +205,13 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
 \end{verbatim}
 
 \subsubsection{Modificación al datapath}
-\par Por el lado del datapath propiamente dicho, lo que se hizo fue agregar un multiplexor (Que está justo debajo del \emph{PC}) que decida entre \emph{PC+4/branch} y \emph{Jump}. Además, como ya se dijo, éste elige en base a la línea \emph{jump} de control que se agregó. Por otro lado, se agregó el \emph{``shifter''} a izquierda, tal como se había mencionado anteriormente.
-\par En un principio se había llevado a cabo que tanto el cable de \emph{target} como la línea de control del \emph{jump} siguieran guardándose en los registros intermedios del pipeline hasta luego del \emph{EX/MEM}. Luego, nos percatamos de que esto podía no ser así, ya que si al decodificarla ya se daba cuenta de que era un \emph{jump}, al ser completamente incondicional, se podía enviar directamente desde esta etapa, evitando así que se ejecuten 2 operaciones innecesarias luego del \emph{jump}. Esta ``mejora'' fue llevada a cabo, pero surgió un detalle: en una situación particular, que se ve plasmada en algunas de las pruebas realizadas (La 3 y la 6), donde el código contenía un \emph{jump} con una instrucción de por medio luego de un \emph{branch}, había problemas (Se ejecutaban instrucciones que no debían). Es por ello que se descartó esta ``mejora'', ya que no era del todo confiable.
-\par Más allá de todo, había algo que no estaba solucionado, lo cual representaba un \emph{\textbf{hazard}} de control en ambas situaciones: las 3 instrucciones siguientes al \emph{jump} se seguían ejecutando (Para disminuir esta cantidad a una instrucción es que se había planteado la ``mejora''). Para evitar dicho comportamiento, se hizo uso de la línea \emph{jump} de la unidad de Control para que con ella se haga un \emph{flush} del contenido de los registros del pipeline. Allí es donde se agregó la compuerta \emph{or} que se encuentra arriba a la derecha, donde al haber un \emph{jump} o un \emph{branch taken}, se hace un \emph{flush} de los registros del pipeline.
+\par Por el lado del datapath propiamente dicho, tal como se puede ver en la figura \ref{fig:DPpipelineJump}, lo que se hizo fue agregar un multiplexor (Que está justo debajo del \emph{PC}) que decida entre \emph{PC+4/branch} y \emph{Jump}. Además, como ya se dijo, éste elige en base a la línea \emph{jump} de control que se agregó. Por otro lado, tal como se había mencionado anteriormente, se agregó el \emph{Shift Left 2}, que se encuentra arriba y a la izquierda del bloque \emph{Registers}.
+\par En un principio se llevó a cabo que tanto el cable de \emph{target} (Que es el que sale del \emph{``shifter''} a izquierda agregado) como la línea de control del \emph{jump} siguieran guardándose en los registros intermedios del pipeline hasta luego del \emph{EX/MEM}, que es lo que se muestra en la resolución.
+\par Luego se nos ocurrió una ``mejora'' que finalmente no prosperó: nos percatamos de que esto podía llegar a no ser así, ya que si al decodificarla ya se daba cuenta de que era un \emph{jump}, al ser el mismo completamente incondicional, se podía enviar directamente desde la etapa de \emph{IF/ID}, evitando así que se ejecuten 2 operaciones innecesarias luego del \emph{jump}. Esta ``mejora'' fue llevada a cabo, pero surgió un detalle: en una situación particular, que se ve plasmada en algunas de las pruebas realizadas (La 3 y la 6), donde el código contenía un \emph{jump} con una instrucción de por medio luego de un \emph{branch}, había problemas (Se ejecutaban instrucciones que no debían). Es por ello que se descartó esta ``mejora'', ya que no era del todo confiable, volviendo a la idea original de que estas líneas se lleven hasta la etapa de \emph{EX/MEM}.
+\par Más allá de todo, aplicando la ``mejora'' o no, había algo que no estaba solucionado, lo cual representaba un \emph{\textbf{hazard}} de control: las 3 instrucciones siguientes al \emph{jump} se seguían ejecutando (Para disminuir esta cantidad a una instrucción es que se había planteado la ``mejora''). Para evitar dicho comportamiento, se hizo uso de la línea \emph{jump} de la unidad de Control para que con ella se haga un \emph{flush} del contenido de los registros del pipeline. Allí es donde se agregó la compuerta \emph{or} que se encuentra arriba a la derecha, donde al haber un \emph{jump} o un \emph{branch taken}, se hace un \emph{flush} de los registros del pipeline.
 
 \subsubsection{Pruebas de jump}
-\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de la nueva instrucción: \\
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de la nueva instrucción:
 
 \bigskip
 \noindent \textbf{Prueba 1:}
@@ -308,7 +309,7 @@ A continuación se presenta una imagen del datapath con los cambios realizados; l
 \par Si el bit selector es 0, como ocurre en el resto de las instrucciones, el datapath funciona normalmente, ya que el multiplexor utiliza la entrada que anteriormente tenía salida al \emph{PC}, por lo que no realiza ningún cambio.
 
 \subsubsection{Pruebas de jr}
-\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de la nueva instrucción: \\
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de la nueva instrucción:
 
 \bigskip
 \noindent\textbf{Prueba 1:}
@@ -333,7 +334,7 @@ A continuación se presenta una imagen del datapath con los cambios realizados; l
 
 \subsubsection{Modificación al set de instrucciones}
 \par Para llevar a cabo este punto, como ya se dijo, se agregó la instrucción \emph{bne} y la pseudoinstrucción \emph{blt}.
-\par Para el caso de \emph{bne} se tuvo que, además de agregar la instrucción, agregar una línea más de la unidad de control que indique si es un \emph{bne}. Así, el archivo \emph{default\_no\_jump.set} sufrió las siguientes modificaciones:
+\par Para el caso de \emph{bne} se tuvo que, además de agregar la instrucción, agregar una línea más de la unidad de control que indique si es un \emph{bne}. Al comienzo se intentó utilizando la de branch ya existente, pero nos resultó más fácil hacerlo habiendo 2 (Una para cada tipo de branch). Así, el archivo \emph{default\_no\_jump.set} sufrió las siguientes modificaciones:
 
 \begin{verbatim}
 "instructions": {
@@ -368,17 +369,20 @@ A continuación se presenta una imagen del datapath con los cambios realizados; l
 \end{itemize}
 \par En cualquiera de los dos casos, el \emph{PC} no tomará el valor de la siguiente instrucción sino que se le asignará el valor del \emph{target}, además de hacer un \emph{flush} de los registros del pipeline.
 \par Esto es lo que se quiere llevar a cabo con el circuito de 2 ANDs, 1 NOT y 1 OR que se encuentra arriba del \emph{Data Memory}, tal como se puede ver en la figura \ref{fig:DPpipelineBLT}.
+\par En este punto, por ser sobre el datapath de pipeline, había que tener cuidado con los \emph{\textbf{hazards}}. Es por ello que se mantuvo la estructura de que la salida de la compuerta \emph{or} haga un \emph{flush} sobre los registros del pipeline al haber un \emph{branch taken}, tal como ya estaba hecho originalmente.
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.4]{img/DPpipelineBLT.pdf}
-	\caption{Datapath pipeline con instrucción \emph{bne} y pseudoinstrucción \emph{blt}.}
+	\includegraphics[scale=0.37]{img/DPpipelineBLT.pdf}
+	\caption{Datapath pipeline con instrucción \emph{bne} y pseudoinstrucción \emph{blt}.\protect\footnotemark}
 	\label{fig:DPpipelineBLT}
 \end{figure}
+\footnotetext{Se decidió no remarcar los componentes agregados ya que se perdía claridad de la conexión de los cables.}
 
 \subsubsection{Pruebas de blt}
-\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de las nuevas instrucciones: \\
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de las nuevas instrucciones:
 
 \bigskip
+\pagebreak
 \noindent\textbf{Prueba 1:}
 \lstset{
 	language=[mips]Assembler,
@@ -394,6 +398,54 @@ A continuación se presenta una imagen del datapath con los cambios realizados; l
 	frame=single
 }
 \lstinputlisting{../punto4/prueba2.asm}
+\medskip
+\textbf{Prueba 3:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba3.asm}
+\medskip
+\textbf{Prueba 4:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba4.asm}
+\medskip
+\textbf{Prueba 5:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba5.asm}
+\medskip
+\textbf{Prueba 6:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba6.asm}
+\medskip
+\textbf{Prueba 7:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba7.asm}
+\medskip
+\textbf{Prueba 8:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba8.asm}
 
 \pagebreak
 
