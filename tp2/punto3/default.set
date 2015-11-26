@@ -4,7 +4,7 @@
 		"R": [{"id": "op", "size": 6}, {"id": "rs", "size": 5}, {"id": "rt", "size": 5}, {"id": "rd", "size": 5}, {"id": "shamt", "size": 5}, {"id": "func", "size": 6}],
 		"I": [{"id": "op", "size": 6}, {"id": "rs", "size": 5}, {"id": "rt", "size": 5}, {"id": "imm", "size": 16}],
 		"J": [{"id": "op", "size": 6}, {"id": "target", "size": 26}],
-		"JR": [ {"id": "op","size": 6},{"id": "rs","size": 5},{"id": "nada", "size": 21} ]
+		"JR": [ {"id": "op","size": 6},{"id": "rs","size": 5},{"id": "ceros", "size": 21} ]
 	},
 	"instructions": {
 		"nop":  {"type": "R", "fields": {"op": 0, "rs": 0, "rt": 0, "rd": 0, "shamt": 0, "func": 0}},
@@ -19,7 +19,7 @@
 		"beq":  {"type": "I", "args": ["reg", "reg", "offset"], "fields": {"op": 4, "rs": "#1", "rt": "#2", "imm": "#3"}, "desc": "PC += ($t1 == $t2) ? (offset * 4 + 4) : 4"},
 		"lw":   {"type": "I", "args": ["reg", "data"], "fields": {"op": 35, "rs": "#2.offset", "rt": "#1", "imm": "#2.base"}, "desc": "$t1 = MEM[base + $t2]"},
 		"sw":   {"type": "I", "args": ["reg", "data"], "fields": {"op": 43, "rs": "#2.offset", "rt": "#1", "imm": "#2.base"}, "desc": "MEM[base + $t2] = $t1"},
-		"jr": {"type": "JR","args": ["reg"] , "fields": {"op": 1,"rs": "#1","nada": 0} }
+		"jr": {"type": "JR","args": ["reg"] , "fields": {"op": 1,"rs": "#1","ceros": 0} }
 	},
 	"pseudo": {
 		"li":   {"args": ["reg", "int"], "to": ["addi #1, $0, #2"], "desc": "$t1 = 22"},
