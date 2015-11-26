@@ -270,7 +270,61 @@ que se encuentra arriba a la izquierda de dicho registro, para que este pierda l
 \pagebreak
 
 \subsection{Punto 3}
+\par En este punto se implementó la instrucción \emph{jr} en el datapath monociclo, para ello, se modificó el datapath y el set de instrucciones:
 
+\subsubsection{Cambios en el set de instrucciones}
+\par Se agregó un nuevo tipo de instrucción, \emph{JR}, con la siguiente configuración:
+\begin{verbatim}
+"types": {
+          ...
+          "JR": [ {"id": "op","size": 6},{"id": "rs","size": 5},
+          {"id": "ceros", "size": 21} ]
+}
+\end{verbatim}
+\par Los 6 bits más significativos corresponden al opcode, los siguientes 5 al registro que contiene la dirección a la cual se saltará y el resto, al no ser necesarios, son llenados con 0s.
+\par Luego, se agrega la instrucción \emph{jr} en particular, siguiendo el formato previamente descripto. Se elige un opcode igual a 1 simplemente porque este numero no es utilizado en ninguna de las otras instrucciones, pero podría haberse elegido cualquier otro numero de 6 bits que no sea utilizado.
+\begin{verbatim}
+"instructions": {
+                 ...
+                 "jr": {"type": "JR","args": ["reg"] , 
+                 "fields": {"op": 1,"rs": "#1","ceros": 0}
+                 ...
+}
+\end{verbatim}
+\par Finalmente se agrega una nueva salida a la unidad de control, \emph{JR} y se la configura para que al recibir un opcode igual a 1 esta salida sea activada y el resto permanezca sin activarse:
+\begin{verbatim}
+"control": {
+            ...
+            "1": { "JR":1 }
+},
+\end{verbatim}
+\subsubsection{Cambios en el datapath}
+A continuación se presenta una imagen del datapath con los cambios realizados, los nuevos componentes agregados están resaltados con un circulo rojo:
+\begin{figure}[H]
+\centering
+\includegraphics[width=1\columnwidth]{../punto3/datapath-jr2.PNG}
+\caption{datapath monociclo con la instrucción \emph{jr}}
+\end{figure}
+\par Como puede observarse, se agregó un fork a la salida de los registros, el cual se dirige hacía una entrada de un nuevo multiplexor. La manera en la que esto funciona esto es la siguiente: 
+\par Cuando la instrucción a ejecutarse es \emph{jr} ingresa un opcode igual a 1 a la unidad de control, esto setea todas las salidas a 0 menos la salida \emph{JR}, la cual es seteada en 1. Esta salida se dirige hacia el selector del nuevo multiplexor agregado. Si este bit es 1, entonces el multiplexor elige la entrada proveniente del registro y se lo pasa al program counter para que se salte a esa dirección. 
+\par Si el bit selector es 0, como ocurre en el resto de las instrucciones, el datapath funciona normalmente, ya que el multiplexor utilizá la entrada que anteriormente tenía salida al program counter, por lo que no realiza ningun cambio.
+\subsubsection{Pruebas}
+\bigskip
+\noindent\textbf{Prueba 1:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto3/prueba.asm}
+\medskip
+\textbf{Prueba 2:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto3/prueba2.asm}
 \pagebreak
 
 \subsection{Punto 4}
