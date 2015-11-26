@@ -53,17 +53,17 @@ En este trabajo práctico se verán modificaciones a distintos datapaths de una ar
 \pagebreak
 
 \section{Introducción}
-\par DrMIPS nos permite modificar el datapath de la arquietectura MIPS32 y el conjunto de instrucciones. Lo usaremos para agregar las siguientes instrucciones, tres de ellas, \emph{sll}, \emph{srl}, \emph{jr} al datapath monociclo y las otras dos, \emph{j} y \emph{blt} al datapath pipeline.
+\par DrMIPS nos permite modificar el datapath de la arquietectura MIPS32 y el conjunto de instrucciones. Lo usaremos para agregar las siguientes instrucciones: tres de ellas (\emph{sll}, \emph{srl} y \emph{jr}) al datapath monociclo y las otras dos (\emph{j} y \emph{blt}) al datapath pipeline.
 \par Para lograrlo, agregaremos nuevos componentes al datapath y modificaremos el set de instrucciones, según sea necesario.
 
 \section{Desarrollo}
-\par Para el desarrollo del TP se utilizaron 2 \emph{datapaths} distintos: uno uniciclo y otro multiciclo, los cuales se muestran en las figuras \ref{fig:DPunicicloOrig} y \ref{fig:DPpipelineOrig} respectivamente.
+\par Para el desarrollo del TP se utilizaron 2 \emph{datapaths} distintos como base: uno monociclo y otro multiciclo, los cuales se muestran en las figuras \ref{fig:DPmonocicloOrig} y \ref{fig:DPpipelineOrig} respectivamente. Cada uno de ellos se usó con su respectivo set de instrucciones. Ambas cosas eran simplemente modificables mediante un archivo JSON.
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.4]{img/DPunicicloOriginal.pdf}
-	\caption{Datapath uniciclo.}
-	\label{fig:DPunicicloOrig}
+	\includegraphics[scale=0.4]{img/DPmonocicloOriginal.pdf}
+	\caption{Datapath monociclo.}
+	\label{fig:DPmonocicloOrig}
 \end{figure}
 
 \pagebreak
@@ -77,6 +77,7 @@ En este trabajo práctico se verán modificaciones a distintos datapaths de una ar
 
 \subsection{Punto 1}
 \par En este ítem, se agregaron las instrucciones \emph{sll} y \emph{srl} al datapath monociclo. Para ello, no fue necesario modificar el datapath, simplemente bastó con agregar las instrucciones al set de instrucciones.
+
 \subsubsection{Modificación al set de instrucciones}
 Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emph{default.set}:
 \begin{verbatim}
@@ -96,19 +97,19 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
 \par Lo que esto hace, es definir dos instrucciones nuevas del tipo R, que reciben como argumento tres registros. Luego, el campo \emph{func}, junto con el \emph{aluop}, será el que referencie a estas instrucciones en la sección de control de la ALU, por lo tanto, al ejecutarlas, la entrada de la ALU será la especificada. Por último, debemos asociar esta entrada con la operación a realizarse, esto lo hacemos en la configuración de la ALU de la siguiente manera:
 \begin{verbatim}
 "alu": {
+    ...
+    "control": [
         ...
-        "control": [
-            ...
-            {"aluop": 2, "func": 0, "out": {"Operation": 8}},
-            {"aluop": 2, "func": 2, "out": {"Operation": 9}},
-            ...
-        ],
-        "operations": {
-            ...
-            "8": "sll",
-            "9": "srl",
-            ...
-        }
+        {"aluop": 2, "func": 0, "out": {"Operation": 8}},
+        {"aluop": 2, "func": 2, "out": {"Operation": 9}},
+        ...
+    ],
+    "operations": {
+        ...
+        "8": "sll",
+        "9": "srl",
+        ...
+    }
 }
 \end{verbatim}
 \par Esto le indica a la sección de control de la ALU, que ante el \emph{aluop}=2 y \emph{func}=0, debe ejecutar la operación 8, en este caso definida como \emph{sll}, lo cual ocurre análogamente con \emph{srl}.
@@ -160,44 +161,42 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
 \pagebreak
 
 \subsection{Punto 2}
-\par En este punto se pedía implementar la instrucción \emph{j} (jump) en el datapath del pipeline. La principal diferencia de esta instrucción con el branch es que en este caso el salto es relativo a la posición actual, mientras que el de la instrucción jump es absoluto.
-\par Para llevar a cabo dicha instrucción, lo que se quiso llevar a cabo fue algo similar a lo que ocurre entre el datapath uniciclo original y el datapath uniciclo sin jump (ver figura \ref{fig:DPunicicloNoJump} ).
+\par En este punto se pedía implementar la instrucción \emph{j} (jump) en el datapath del pipeline. La principal diferencia de esta instrucción con el \emph{branch} es que en este caso el salto es relativo a la posición actual, mientras que el de la instrucción \emph{jump} es absoluto.
+\par Para llevar a cabo dicha instrucción, lo que se quiso implementar fue algo similar a lo que ocurre entre el datapath monociclo original y el datapath monociclo sin jump (ver figura \ref{fig:DPmonocicloNoJump} ).
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[scale=0.4]{img/DPunicicloNoJump.pdf}
-	\caption{Datapath uniciclo sin instrucción jump.}
-	\label{fig:DPunicicloNoJump}
+	\includegraphics[scale=0.31]{img/DPmonocicloNoJump.pdf}
+	\caption{Datapath monociclo sin instrucción jump.}
+	\label{fig:DPmonocicloNoJump}
 \end{figure}
 
-\par Podemos notar en contraste con la figura \ref{fig:DPunicicloOrig} que hay un multiplexor y un \emph{``shifter''} a izquierda de más. Siguiendo esta idea, pero un poco más complejo por ser multiciclo, podemos ver la diferencia entre la figura \ref{fig:DPpipelineOrig} y \ref{fig:DPpipelineJump}, donde se aplica este mismo concepto.
+\par Podemos notar en contraste con la figura \ref{fig:DPmonocicloOrig} que hay un multiplexor y un \emph{``shifter''} a izquierda de más. Siguiendo esta idea, pero un poco más complejo por ser multiciclo, podemos ver la diferencia entre la figura \ref{fig:DPpipelineOrig} y \ref{fig:DPpipelineJump}, donde se aplica este mismo concepto para la resolución de este punto.
 
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[scale=0.4]{img/DPpipelineJump.pdf}
-	\caption{Datapath pipeline con instrucción jump.}
+	\caption{Datapath pipeline con instrucción \emph{jump}.}
 	\label{fig:DPpipelineJump}
 \end{figure}
 
 \subsubsection{Modificación al set de instrucciones}
-\par Para llevar a cabo este punto, primero que nada se agregó tanto el tipo de instrucción J, así como también la instrucción propiamente dicha al \emph{default-no-jump.set}.
+\par Para llevar a cabo este punto, primero que nada se agregó tanto el tipo de instrucción J, así como también la instrucción propiamente dicha al set de instrucciones \emph{default-no-jump.set}.
 \begin{verbatim}
-...
 "types": {
     ...
     "J": [{"id": "op", "size": 6}, {"id": "target", "size": 26}]
-}
-...
+},
 "instructions": {
     ...
-    "j":    {"type": "J", "args": ["target"], "fields": {"op": 2,
-    "target": "#1"}, "desc": "PC = target"},
+    "j": { "type": "J", "args": ["target"], "fields": {"op": 2,
+           "target": "#1"}, "desc": "PC = target"
+         },
     ...
 }
 \end{verbatim}
 \par Por otro lado, se agregó una salida de \emph{jump} en la unidad de Control, que indique si la instrucción es de jump:
 \begin{verbatim}
-...
 "control": {
     ...
     "2": {"Jump": 1},
@@ -207,16 +206,11 @@ Se agregaron las siguientes líneas al campo \emph{instructions} del archivo \emp
 
 \subsubsection{Modificación al datapath}
 \par Por el lado del datapath propiamente dicho, lo que se hizo fue agregar un multiplexor (Que está justo debajo del \emph{PC}) que decida entre \emph{PC+4/branch} y \emph{Jump}. Además, como ya se dijo, éste elige en base a la línea \emph{jump} de control que se agregó. Por otro lado, se agregó el \emph{``shifter''} a izquierda, tal como se había mencionado anteriormente.
-\par En un principio se había llevado a cabo que tanto el cable de \emph{target} como la línea de control del \emph{jump} siguieran guardándose en los registros intermedios del pipeline hasta luego del \emph{EX/MEM}. Luego, nos percatamos de que esto podía no ser así, ya que si al decodificarla ya se daba cuenta de que era un \emph{jump}, al ser completamente incondicional, se podía enviar directamente desde esta etapa, evitando así que se ejecuten 2 operaciones innecesarias luego del \emph{jump}. Esta ``mejora'' fue llevada a cabo, pero surgió un detalle: en una situación particular, que se ve plasmada en unas de las pruebas realizadas (La 3 y la 6), donde el código contenía un \emph{jump} con una instrucción de por medio luego de un \emph{branch}, había problemas (Se ejecutaban instrucciones que no debían). Es por ello que se descartó esta ``mejora'', ya que no era del todo confiable.
-\par Más allá de todo, había algo que no estaba solucionado, lo cual representaba un \emph{\textbf{hazard}} de control en ambas situaciones: la instrucción siguiente al \emph{jump} se seguía ejecutando (Más aún, cuando se llegaba hasta el \emph{EX/MEM}, las 3 instrucciones siguientes se ejecutaban). Para evitar dicho comportamiento, se hizo uso de la línea \emph{jump} de la unidad de Control para que con ella se haga un \emph{flush} del contenido de los registros del pipeline. Allí es donde se agregó la compuerta \emph{or}
+\par En un principio se había llevado a cabo que tanto el cable de \emph{target} como la línea de control del \emph{jump} siguieran guardándose en los registros intermedios del pipeline hasta luego del \emph{EX/MEM}. Luego, nos percatamos de que esto podía no ser así, ya que si al decodificarla ya se daba cuenta de que era un \emph{jump}, al ser completamente incondicional, se podía enviar directamente desde esta etapa, evitando así que se ejecuten 2 operaciones innecesarias luego del \emph{jump}. Esta ``mejora'' fue llevada a cabo, pero surgió un detalle: en una situación particular, que se ve plasmada en algunas de las pruebas realizadas (La 3 y la 6), donde el código contenía un \emph{jump} con una instrucción de por medio luego de un \emph{branch}, había problemas (Se ejecutaban instrucciones que no debían). Es por ello que se descartó esta ``mejora'', ya que no era del todo confiable.
+\par Más allá de todo, había algo que no estaba solucionado, lo cual representaba un \emph{\textbf{hazard}} de control en ambas situaciones: las 3 instrucciones siguientes al \emph{jump} se seguían ejecutando (Para disminuir esta cantidad a una instrucción es que se había planteado la ``mejora''). Para evitar dicho comportamiento, se hizo uso de la línea \emph{jump} de la unidad de Control para que con ella se haga un \emph{flush} del contenido de los registros del pipeline. Allí es donde se agregó la compuerta \emph{or} que se encuentra arriba a la derecha, donde al haber un \emph{jump} o un \emph{branch taken}, se hace un \emph{flush} de los registros del pipeline.
 
-que se encuentra arriba a la izquierda de dicho registro, para que este pierda los valores al haber un \emph{jump} o bien un \emph{branch taken}.
-
-\par Finalmente, el archivo \emph{pipeline.cpu} modificado para este caso queda de la siguiente manera:
-
-
-\subsubsection{Pruebas del jump}
-\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de las nuevas instrucciones: \\
+\subsubsection{Pruebas de jump}
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de la nueva instrucción: \\
 
 \bigskip
 \noindent \textbf{Prueba 1:}
@@ -270,45 +264,52 @@ que se encuentra arriba a la izquierda de dicho registro, para que este pierda l
 \pagebreak
 
 \subsection{Punto 3}
-\par En este punto se implementó la instrucción \emph{jr} en el datapath monociclo, para ello, se modificó el datapath y el set de instrucciones:
+\par En este punto se implementó la instrucción \emph{jr} en el datapath monociclo; para ello, se modificó el datapath y el set de instrucciones:
 
-\subsubsection{Cambios en el set de instrucciones}
-\par Se agregó un nuevo tipo de instrucción, \emph{JR}, con la siguiente configuración:
+\subsubsection{Modificación al set de instrucciones}
+\par Se agregó un nuevo tipo de instrucción, \emph{JR}, con la siguiente configuración (Aunque se podría haber utilizado el tipo ``R'' para implementarla):
 \begin{verbatim}
 "types": {
-          ...
-          "JR": [ {"id": "op","size": 6},{"id": "rs","size": 5},
-          {"id": "ceros", "size": 21} ]
+    ...
+    "JR": [ {"id": "op","size": 6},{"id": "rs","size": 5},
+            {"id": "ceros", "size": 21} ]
 }
 \end{verbatim}
 \par Los 6 bits más significativos corresponden al opcode, los siguientes 5 al registro que contiene la dirección a la cual se saltará y el resto, al no ser necesarios, son llenados con 0s.
 \par Luego, se agrega la instrucción \emph{jr} en particular, siguiendo el formato previamente descripto. Se elige un opcode igual a 1 simplemente porque este numero no es utilizado en ninguna de las otras instrucciones, pero podría haberse elegido cualquier otro numero de 6 bits que no sea utilizado.
 \begin{verbatim}
 "instructions": {
-                 ...
-                 "jr": {"type": "JR","args": ["reg"] , 
-                 "fields": {"op": 1,"rs": "#1","ceros": 0}
-                 ...
-}
+    ...
+    "jr": { "type": "JR","args": ["reg"] , 
+            "fields": {"op": 1,"rs": "#1","ceros": 0 }
+          }
+},
 \end{verbatim}
 \par Finalmente se agrega una nueva salida a la unidad de control, \emph{JR} y se la configura para que al recibir un opcode igual a 1 esta salida sea activada y el resto permanezca sin activarse:
 \begin{verbatim}
 "control": {
-            ...
-            "1": { "JR":1 }
+    ...
+    "1": { "JR":1 }
 },
 \end{verbatim}
-\subsubsection{Cambios en el datapath}
-A continuación se presenta una imagen del datapath con los cambios realizados, los nuevos componentes agregados están resaltados con un circulo rojo:
+
+\subsubsection{Modificación al datapath}
+
+A continuación se presenta una imagen del datapath con los cambios realizados; los nuevos componentes agregados están resaltados con un círculo rojo:
+
 \begin{figure}[H]
-\centering
-\includegraphics[width=1\columnwidth]{../punto3/datapath-jr2.PNG}
-\caption{datapath monociclo con la instrucción \emph{jr}}
+	\centering
+	\includegraphics[width=1\columnwidth]{img/DPmonocicloJR-2.PNG}
+	\caption{Datapath monociclo con la instrucción \emph{jr}}
 \end{figure}
-\par Como puede observarse, se agregó un fork a la salida de los registros, el cual se dirige hacía una entrada de un nuevo multiplexor. La manera en la que esto funciona esto es la siguiente: 
-\par Cuando la instrucción a ejecutarse es \emph{jr} ingresa un opcode igual a 1 a la unidad de control, esto setea todas las salidas a 0 menos la salida \emph{JR}, la cual es seteada en 1. Esta salida se dirige hacia el selector del nuevo multiplexor agregado. Si este bit es 1, entonces el multiplexor elige la entrada proveniente del registro y se lo pasa al program counter para que se salte a esa dirección. 
-\par Si el bit selector es 0, como ocurre en el resto de las instrucciones, el datapath funciona normalmente, ya que el multiplexor utilizá la entrada que anteriormente tenía salida al program counter, por lo que no realiza ningun cambio.
-\subsubsection{Pruebas}
+
+\par Como puede observarse, se agregó un \emph{fork} a la salida de los registros, el cual se dirige hacia una entrada de un nuevo multiplexor. La manera en la que esto funciona es la siguiente: 
+\par Cuando la instrucción a ejecutarse es \emph{jr} ingresa un opcode igual a 1 a la unidad de control; esto setea todas las salidas a 0 menos la salida \emph{JR}, la cual es seteada en 1. Esta salida se dirige hacia el selector del nuevo multiplexor agregado. Si este bit es 1, entonces el multiplexor elige la entrada proveniente del registro y se lo pasa al \emph{PC} para que se salte a esa dirección. 
+\par Si el bit selector es 0, como ocurre en el resto de las instrucciones, el datapath funciona normalmente, ya que el multiplexor utiliza la entrada que anteriormente tenía salida al \emph{PC}, por lo que no realiza ningún cambio.
+
+\subsubsection{Pruebas de jr}
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de la nueva instrucción: \\
+
 \bigskip
 \noindent\textbf{Prueba 1:}
 \lstset{
@@ -328,14 +329,79 @@ A continuación se presenta una imagen del datapath con los cambios realizados, l
 \pagebreak
 
 \subsection{Punto 4}
+\par En este punto se implementó la instrucción \emph{blt} (Branch if Less Than) en el datapath pipeline. En un comienzo se intentó resolverlo únicamente con pseudoinstrucciones, lo cual resultó insatisfactorio. Por ello, se buscó y se llegó a la conclusión que no bastaba sólo con eso, sino que además se tenía que implementar la instrucción de \emph{bne} (Branch if Not Equal).
+
+\subsubsection{Modificación al set de instrucciones}
+\par Para llevar a cabo este punto, como ya se dijo, se agregó la instrucción \emph{bne} y la pseudoinstrucción \emph{blt}.
+\par Para el caso de \emph{bne} se tuvo que, además de agregar la instrucción, agregar una línea más de la unidad de control que indique si es un \emph{bne}. Así, el archivo \emph{default\_no\_jump.set} sufrió las siguientes modificaciones:
+
+\begin{verbatim}
+"instructions": {
+    ...
+    "bne": { "type": "I", "args": ["reg", "reg", "offset"],
+             "fields": {"op": 5, "rs": "#1", "rt": "#2", "imm": "#3"},
+             "desc": "PC += ($t1 != $t2) ? (offset * 4 + 4) : 4"
+           },
+    ...
+},
+"pseudo": {
+    ...
+    "blt": { "args": ["reg", "reg", "offset"],
+             "to": ["slt $1, #1, #2", "bne $1, $0, #3"],
+             "desc": "PC += ($t1 < $t2) ? (offset * 4 + 4) : 4"
+           },
+    ...
+},
+"control": {
+    ...
+    "4": {"ALUOp": 1, "ALUSrc": 0, "BranchEQ": 1},
+    "5": {"ALUOp": 1, "ALUSrc": 0, "BranchNE": 1},
+    ...
+}
+\end{verbatim}
+
+\subsubsection{Modificación al datapath}
+\par La idea para este punto fue desarrollar más que nada la instrucción \emph{bne}, que luego utilizará la pseudoinstrucción \emph{blt}. Para ello, se hizo uso de las líneas \emph{BranchEQ} y \emph{BranchNE} de la unidad de control, junto con la salida \emph{zero} de la ALU. El concepto general recae en que se hará un branch si se cumplen algunas de estas 2 condiciones:
+\begin{itemize}
+	\item Es un \emph{bne} (que será indicado por la línea de control \emph{BranchNE}) y el resultado de restar los registros intervinientes no dio cero. Esto último indicaría que no son iguales, mediante la salida \emph{zero} con valor igual a \emph{0} de la ALU.
+	\item Es un \emph{beq} (que será indicado por la línea de control \emph{BranchEQ}) y la salida \emph{zero} de la ALU tiene un valor 1 (Es decir, que se restaron los registros y el resultado dio cero, por lo que son iguales).
+\end{itemize}
+\par En cualquiera de los dos casos, el \emph{PC} no tomará el valor de la siguiente instrucción sino que se le asignará el valor del \emph{target}, además de hacer un \emph{flush} de los registros del pipeline.
+\par Esto es lo que se quiere llevar a cabo con el circuito de 2 ANDs, 1 NOT y 1 OR que se encuentra arriba del \emph{Data Memory}, tal como se puede ver en la figura \ref{fig:DPpipelineBLT}.
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[scale=0.4]{img/DPpipelineBLT.pdf}
+	\caption{Datapath pipeline con instrucción \emph{bne} y pseudoinstrucción \emph{blt}.}
+	\label{fig:DPpipelineBLT}
+\end{figure}
+
+\subsubsection{Pruebas de blt}
+\par Estas fueron las pruebas que se corrieron para verificar el correcto funcionamiento de las nuevas instrucciones: \\
+
+\bigskip
+\noindent\textbf{Prueba 1:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba.asm}
+\medskip
+\textbf{Prueba 2:}
+\lstset{
+	language=[mips]Assembler,
+	tabsize=4,
+	frame=single
+}
+\lstinputlisting{../punto4/prueba2.asm}
 
 \pagebreak
 
 \section{Conclusiones}
 
-\par Realizar este trabajo práctico nos permitió familiarizarnos con la arquitectura de CPU MIPS y con el simulador DrMIPS. Nos sirvió para comprender como funciona el datapath monociclo y el pipeline, también para darnos cuenta que hay distintas formas de implementar una instrucción. 
+\par Realizar este trabajo práctico nos permitió interiorizarnos aún más con la arquitectura de CPU MIPS, más en particular con el datapath de la misma, y con el simulador DrMIPS. Nos sirvió para comprender como funciona el datapath monociclo y el pipeline, así como también para darnos cuenta que hay distintas formas de implementar una instrucción. 
 \par En algunos casos es posible agregar instrucciones sin modificar el datapath, como en el caso de las instrucciones \emph{sll} y \emph{srl}, pero generalmente requiere el agregado de nuevos componentes, lo que implica más costos, un aumento en la complejidad del datapath y posiblemente una disminución en la velocidad de ejecución. Por lo cual, a la hora de elegir si agregar una nueva instrucción, deben considerarse estas desventajas.
-\par Por último, pudimos observar que en determinados casos, como en el de \emph{blt}, no es posible agregar una nueva instrucción al datapath, sino que es necesario implementarla como una combinación de instrucciones ya existentes.
+\par Por último, pudimos observar que en determinados casos, como en el de \emph{blt}, no es posible agregar una nueva instrucción al datapath, sino que es necesario implementarla como una combinación de instrucciones ya existentes, o bien primero deben implementarse nuevas instrucciones (como el caso de \emph{bne}), para luego sí poder llevar a cabo la pseudoinstrucción \emph{blt}.
 
 \section{Referencias}
 \noindent[1] DrMIPS, \url{https://bitbucket.org/brunonova/drmips/wiki/Home}.\\ \relax

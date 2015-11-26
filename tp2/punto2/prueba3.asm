@@ -7,3 +7,6 @@ fin:
 	li $t3, 3
 fin2:
 	li $t4, 4
+	# al finalizar deberian quedar
+	# - t1=1, t3=3, t4=4
+	# - t2 y t5 no deberian ser modificados

@@ -4,4 +4,5 @@
 	li $t2, 2
 fin:
 	li $t3, 3
-#al finalizar el programa deberian quedar t0=1, t1=1, t2=2, t3=3
+	# al finalizar deberian quedar
+	# - t0=1, t1=1, t2=2, t3=3
